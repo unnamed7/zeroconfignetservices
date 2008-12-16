@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace ZeroconfService
 {
-    enum DNSServiceFlags : uint
-    {
+	enum DNSServiceFlags : uint
+	{
 		/// <summary>
 		/// MoreComing indicates to a callback that at least one more result is
 		/// queued and will be delivered following immediately after this one.
@@ -20,8 +20,8 @@ namespace ZeroconfService
 		/// available right now at this instant. If more answers become available
 		/// in the future they will be delivered as usual.
 		/// </summary>
-        kDNSServiceFlagsMoreComing          = 0x1,
-
+		kDNSServiceFlagsMoreComing          = 0x1,
+		
 		/// <summary>
 		/// Flags for domain enumeration and browse/query reply callbacks.
 		/// "Default" applies only to enumeration and is only valid in
@@ -29,9 +29,9 @@ namespace ZeroconfService
 		/// flag NOT set indicates a "Remove", i.e. the domain is no longer
 		/// valid.
 		/// </summary>
-        kDNSServiceFlagsAdd                 = 0x2,
-        kDNSServiceFlagsDefault             = 0x4,
-
+		kDNSServiceFlagsAdd                 = 0x2,
+		kDNSServiceFlagsDefault             = 0x4,
+		
 		/// <summary>
 		/// Flag for specifying renaming behavior on name conflict when registering
 		/// non-shared records. By default, name conflicts are automatically handled
@@ -41,26 +41,26 @@ namespace ZeroconfService
 		/// (i.e. the default name is not used.)
 		/// </summary>
 		kDNSServiceFlagsNoAutoRename        = 0x8,
-
+		
 		/// <summary>
 		/// Flags for specifying domain enumeration type in DNSServiceEnumerateDomains.
 		/// BrowseDomains enumerates domains recommended for browsing,
 		/// RegistrationDomains enumerates domains recommended for registration.
 		/// </summary>
-        kDNSServiceFlagsBrowseDomains       = 0x40,
-        kDNSServiceFlagsRegistrationDomains = 0x80,
-
+		kDNSServiceFlagsBrowseDomains       = 0x40,
+		kDNSServiceFlagsRegistrationDomains = 0x80,
+		
 		/// <summary>
 		/// Flag for creating a long-lived unicast query for the DNSServiceQueryRecord call.
 		/// </summary>
 		kDNSServiceFlagsLongLivedQuery      = 0x100
-    }
-
+	}
+	
 	enum DNSServiceClass : ushort
 	{
 		kDNSServiceClass_IN = 1 /* Internet */
 	}
-
+	
 	enum DNSServiceType : ushort
 	{
 		kDNSServiceType_A     = 1,   /* Host address. */
@@ -69,43 +69,43 @@ namespace ZeroconfService
 		kDNSServiceType_SRV   = 33,  /* Server Selection. */
 		kDNSServiceType_ANY   = 255  /* Wildcard match. */
 	}
-
-    /// <summary>
-    /// The error type used by the underlying dnssd.dll. These errors can
-    /// be wrapped in <see cref="DNSServiceException">DNSServiceException</see> exceptions.
-    /// </summary>
-    public enum DNSServiceErrorType : int
-    {
-		kDNSServiceErr_NoError = 0,
-        kDNSServiceErr_Unknown = -65537,       /* 0xFFFE FFFF */
-        kDNSServiceErr_NoSuchName = -65538,
-        kDNSServiceErr_NoMemory = -65539,
-        kDNSServiceErr_BadParam = -65540,
-        kDNSServiceErr_BadReference = -65541,
-        kDNSServiceErr_BadState = -65542,
-        kDNSServiceErr_BadFlags = -65543,
-        kDNSServiceErr_Unsupported = -65544,
-        kDNSServiceErr_NotInitialized = -65545,
-        kDNSServiceErr_AlreadyRegistered = -65547,
-        kDNSServiceErr_NameConflict = -65548,
-        kDNSServiceErr_Invalid = -65549,
-        kDNSServiceErr_Firewall = -65550,
-        kDNSServiceErr_Incompatible = -65551,        /* client library incompatible with daemon */
-        kDNSServiceErr_BadInterfaceIndex = -65552,
-        kDNSServiceErr_Refused = -65553,
-        kDNSServiceErr_NoSuchRecord = -65554,
-        kDNSServiceErr_NoAuth = -65555,
-        kDNSServiceErr_NoSuchKey = -65556,
-        kDNSServiceErr_NATTraversal = -65557,
-        kDNSServiceErr_DoubleNAT = -65558,
-        kDNSServiceErr_BadTime = -65559,
-		kDNSServiceErr_Timeout = -72007    /* NSNetServiceError */
-    }
-
-    class mDNSImports
-    {
-        /// <summary>
-        /// Access underlying Unix domain socket for an initialized DNSServiceRef.
+	
+	/// <summary>
+	/// The error type used by the underlying dnssd.dll. These errors can
+	/// be wrapped in <see cref="DNSServiceException">DNSServiceException</see> exceptions.
+	/// </summary>
+	public enum DNSServiceErrorType : int
+	{
+		kDNSServiceErr_NoError           = 0,
+		kDNSServiceErr_Unknown           = -65537,  /* 0xFFFE FFFF */
+		kDNSServiceErr_NoSuchName        = -65538,
+		kDNSServiceErr_NoMemory          = -65539,
+		kDNSServiceErr_BadParam          = -65540,
+		kDNSServiceErr_BadReference      = -65541,
+		kDNSServiceErr_BadState          = -65542,
+		kDNSServiceErr_BadFlags          = -65543,
+		kDNSServiceErr_Unsupported       = -65544,
+		kDNSServiceErr_NotInitialized    = -65545,
+		kDNSServiceErr_AlreadyRegistered = -65547,
+		kDNSServiceErr_NameConflict      = -65548,
+		kDNSServiceErr_Invalid           = -65549,
+		kDNSServiceErr_Firewall          = -65550,
+		kDNSServiceErr_Incompatible      = -65551,  /* client library incompatible with daemon */
+		kDNSServiceErr_BadInterfaceIndex = -65552,
+		kDNSServiceErr_Refused           = -65553,
+		kDNSServiceErr_NoSuchRecord      = -65554,
+		kDNSServiceErr_NoAuth            = -65555,
+		kDNSServiceErr_NoSuchKey         = -65556,
+		kDNSServiceErr_NATTraversal      = -65557,
+		kDNSServiceErr_DoubleNAT         = -65558,
+		kDNSServiceErr_BadTime           = -65559,
+		kDNSServiceErr_Timeout           = -72007  /* NSNetServiceError */
+	}
+	
+	class mDNSImports
+	{
+		/// <summary>
+		/// Access underlying Unix domain socket for an initialized DNSServiceRef.
 		/// The DNS Service Discovery implmementation uses this socket to communicate between
 		/// the client and the mDNSResponder daemon.  The application MUST NOT directly read from
 		/// or write to this socket.  Access to the socket is provided so that it can be used as a
@@ -117,16 +117,16 @@ namespace ZeroconfService
 		/// The client is responsible for ensuring that the data on the socket is processed in a timely
 		/// fashion - the daemon may terminate its connection with a client that does not clear its
 		/// socket buffer.
-        /// </summary>
-        /// <param name="sdRef">
-		///		A DNSServiceRef initialized by any of the DNSService calls.
+		/// </summary>
+		/// <param name="sdRef">
+		/// 	A DNSServiceRef initialized by any of the DNSService calls.
 		/// </param>
-        /// <returns>
-		///		The DNSServiceRef's underlying socket descriptor, or -1 on error.
+		/// <returns>
+		/// 	The DNSServiceRef's underlying socket descriptor, or -1 on error.
 		/// </returns>
-        [DllImport("dnssd.dll")]
-        public static extern Int32 DNSServiceRefSockFD(IntPtr sdRef);
-
+		[DllImport("dnssd.dll")]
+		public static extern Int32 DNSServiceRefSockFD(IntPtr sdRef);
+		
 		/// <summary>
 		/// Read a reply from the daemon, calling the appropriate application callback.  This call will
 		/// block until the daemon's response is received.  Use DNSServiceRefSockFD() in
@@ -138,16 +138,16 @@ namespace ZeroconfService
 		/// process the daemon's responses.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A DNSServiceRef initialized by any of the DNSService calls that take a callback parameter.
+		/// 	A DNSServiceRef initialized by any of the DNSService calls that take a callback parameter.
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on success,
-		///		otherwise returns an error code indicating the specific failure that occurred.
+		/// 	Returns kDNSServiceErr_NoError on success,
+		/// 	otherwise returns an error code indicating the specific failure that occurred.
 		/// </returns>
 		[DllImport("dnssd.dll")]
-        public static extern DNSServiceErrorType DNSServiceProcessResult(IntPtr sdRef);
-
-        /// <summary>
+		public static extern DNSServiceErrorType DNSServiceProcessResult(IntPtr sdRef);
+		
+		/// <summary>
 		/// Terminate a connection with the daemon and free memory associated with the DNSServiceRef.
 		/// Any services or records registered with this DNSServiceRef will be deregistered. Any
 		/// Browse, Resolve, or Query operations called with this reference will be terminated.
@@ -169,163 +169,164 @@ namespace ZeroconfService
 		/// DNSServiceDiscovery.h API.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A DNSServiceRef initialized by any of the DNSService calls.
+		/// 	A DNSServiceRef initialized by any of the DNSService calls.
 		/// </param>
-        [DllImport("dnssd.dll")]
-        public static extern void DNSServiceRefDeallocate(IntPtr sdRef);
-
-        /// <summary>
-        /// Callback method for DNSServiceBrowse()
-        /// </summary>
-        /// <param name="sdRef">
-		///		The DNSServiceRef initialized by DNSServiceBrowse().
+		[DllImport("dnssd.dll")]
+		public static extern void DNSServiceRefDeallocate(IntPtr sdRef);
+		
+		/// <summary>
+		/// Callback method for DNSServiceBrowse()
+		/// </summary>
+		/// <param name="sdRef">
+		/// 	The DNSServiceRef initialized by DNSServiceBrowse().
 		/// </param>
-        /// <param name="flags">
-		///		Possible values are kDNSServiceFlagsMoreComing and kDNSServiceFlagsAdd.
-		///		See flag definitions for details.
+		/// <param name="flags">
+		/// 	Possible values are kDNSServiceFlagsMoreComing and kDNSServiceFlagsAdd.
+		/// 	See flag definitions for details.
 		/// </param>
-        /// <param name="interfaceIndex">
-		///		The interface on which the service is advertised.  This index should
-		///		be passed to DNSServiceResolve() when resolving the service.
+		/// <param name="interfaceIndex">
+		/// 	The interface on which the service is advertised.  This index should
+		/// 	be passed to DNSServiceResolve() when resolving the service.
 		/// </param>
-        /// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError (0) on success, otherwise will
-		///		indicate the failure that occurred.  Other parameters are undefined if
-		///		the errorCode is nonzero.
+		/// <param name="errorCode">
+		/// 	Will be kDNSServiceErr_NoError (0) on success, otherwise will
+		/// 	indicate the failure that occurred.  Other parameters are undefined if
+		/// 	the errorCode is nonzero.
 		/// </param>
-        /// <param name="serviceName">
-		///		The discovered service name. This name should be displayed to the user,
-		///		and stored for subsequent use in the DNSServiceResolve() call.
+		/// <param name="serviceName">
+		/// 	The discovered service name. This name should be displayed to the user,
+		/// 	and stored for subsequent use in the DNSServiceResolve() call.
 		/// </param>
-        /// <param name="regtype">
-		///		The service type, which is usually (but not always) the same as was passed
-		///		to DNSServiceBrowse(). One case where the discovered service type may
-		///		not be the same as the requested service type is when using subtypes:
-		///		The client may want to browse for only those ftp servers that allow
-		///		anonymous connections. The client will pass the string "_ftp._tcp,_anon"
-		///		to DNSServiceBrowse(), but the type of the service that's discovered
-		///		is simply "_ftp._tcp". The regtype for each discovered service instance
-		///		should be stored along with the name, so that it can be passed to
-		///		DNSServiceResolve() when the service is later resolved.
+		/// <param name="regtype">
+		/// 	The service type, which is usually (but not always) the same as was passed
+		/// 	to DNSServiceBrowse(). One case where the discovered service type may
+		/// 	not be the same as the requested service type is when using subtypes:
+		/// 	The client may want to browse for only those ftp servers that allow
+		/// 	anonymous connections. The client will pass the string "_ftp._tcp,_anon"
+		/// 	to DNSServiceBrowse(), but the type of the service that's discovered
+		/// 	is simply "_ftp._tcp". The regtype for each discovered service instance
+		/// 	should be stored along with the name, so that it can be passed to
+		/// 	DNSServiceResolve() when the service is later resolved.
 		/// </param>
-        /// <param name="replyDomain">
-		///		The domain of the discovered service instance. This may or may not be the
-		///		same as the domain that was passed to DNSServiceBrowse(). The domain for each
-		///		discovered service instance should be stored along with the name, so that
-		///		it can be passed to DNSServiceResolve() when the service is later resolved.
+		/// <param name="replyDomain">
+		/// 	The domain of the discovered service instance. This may or may not be the
+		/// 	same as the domain that was passed to DNSServiceBrowse(). The domain for each
+		/// 	discovered service instance should be stored along with the name, so that
+		/// 	it can be passed to DNSServiceResolve() when the service is later resolved.
 		/// </param>
-        /// <param name="context">
-		///		The context pointer that was passed to the callout.
+		/// <param name="context">
+		/// 	The context pointer that was passed to the callout.
 		/// </param>
-        public delegate void DNSServiceBrowseReply(IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-            DNSServiceErrorType errorCode,
-          [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String serviceName,
-          [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-          [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
-            IntPtr context);
-
+		public delegate void DNSServiceBrowseReply(
+		    IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		    DNSServiceErrorType errorCode,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String serviceName,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Browse for instances of a service.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A pointer to an uninitialized DNSServiceRef. If the call succeeds
-		///		then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
-		///		and the browse operation will run indefinitely until the client
-		///		terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
+		/// 	A pointer to an uninitialized DNSServiceRef. If the call succeeds
+		/// 	then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
+		/// 	and the browse operation will run indefinitely until the client
+		/// 	terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="flags">
-		///		Currently ignored, reserved for future use.
+		/// 	Currently ignored, reserved for future use.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		If non-zero, specifies the interface on which to browse for services
-		///		(the index for a given interface is determined via the if_nametoindex()
-		///		family of calls.)  Most applications will pass 0 to browse on all available
-		///		interfaces. See "Constants for specifying an interface index" for more details.
+		/// 	If non-zero, specifies the interface on which to browse for services
+		/// 	(the index for a given interface is determined via the if_nametoindex()
+		/// 	family of calls.)  Most applications will pass 0 to browse on all available
+		/// 	interfaces. See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="regtype">
-		///		The service type being browsed for followed by the protocol, separated by a
-		///		dot (e.g. "_ftp._tcp").  The transport protocol must be "_tcp" or "_udp".
+		/// 	The service type being browsed for followed by the protocol, separated by a
+		/// 	dot (e.g. "_ftp._tcp").  The transport protocol must be "_tcp" or "_udp".
 		/// </param>
 		/// <param name="domain">
-		///		If non-NULL, specifies the domain on which to browse for services.
-		///		Most applications will not specify a domain, instead browsing on the
-		///		default domain(s).
+		/// 	If non-NULL, specifies the domain on which to browse for services.
+		/// 	Most applications will not specify a domain, instead browsing on the
+		/// 	default domain(s).
 		/// </param>
 		/// <param name="callBack">
-		///		The function to be called when an instance of the service being browsed for
-		///		is found, or if the call asynchronously fails.
+		/// 	The function to be called when an instance of the service being browsed for
+		/// 	is found, or if the call asynchronously fails.
 		/// </param>
 		/// <param name="context">
-		///		An application context pointer which is passed to the callback function (may be NULL).
+		/// 	An application context pointer which is passed to the callback function (may be NULL).
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
-		///		errors are delivered to the callback), otherwise returns an error code indicating
-		///		the error that occurred (the callback is not invoked and the DNSServiceRef
-		///		is not initialized.)
+		/// 	Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
+		/// 	errors are delivered to the callback), otherwise returns an error code indicating
+		/// 	the error that occurred (the callback is not invoked and the DNSServiceRef
+		/// 	is not initialized.)
 		/// </returns>
-        [DllImport("dnssd.dll")]
-        public static extern DNSServiceErrorType DNSServiceBrowse(out IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-            DNSServiceBrowseReply callBack,
-            IntPtr context);
+		[DllImport("dnssd.dll")]
+		public static extern DNSServiceErrorType DNSServiceBrowse(out IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		    DNSServiceBrowseReply callBack,
+		    IntPtr context);
 
-        
+		
 		/// <summary>
 		/// Callback method for DNSServiceResolve()
 		/// </summary>
 		/// <param name="sdRef">
-		///		The DNSServiceRef initialized by DNSServiceResolve().
+		/// 	The DNSServiceRef initialized by DNSServiceResolve().
 		/// </param>
 		/// <param name="flags">
-		///		Currently unused, reserved for future use.
+		/// 	Currently unused, reserved for future use.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		The interface on which the service was resolved.
+		/// 	The interface on which the service was resolved.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError (0) on success, otherwise will
-		///		indicate the failure that occurred.  Other parameters are undefined if
-		///		the errorCode is nonzero.
+		/// 	Will be kDNSServiceErr_NoError (0) on success, otherwise will
+		/// 	indicate the failure that occurred.  Other parameters are undefined if
+		/// 	the errorCode is nonzero.
 		/// </param>
 		/// <param name="fullname">
-		///		The full service domain name, in the form [servicename].[protocol].[domain].
-		///		(This name is escaped following standard DNS rules, making it suitable for
-		///		passing to standard system DNS APIs such as res_query(), or to the
-		///		special-purpose functions included in this API that take fullname parameters.
+		/// 	The full service domain name, in the form [servicename].[protocol].[domain].
+		/// 	(This name is escaped following standard DNS rules, making it suitable for
+		/// 	passing to standard system DNS APIs such as res_query(), or to the
+		/// 	special-purpose functions included in this API that take fullname parameters.
 		/// </param>
 		/// <param name="hosttarget">
-		///		The target hostname of the machine providing the service.  This name can
-		///		be passed to functions like gethostbyname() to identify the host's IP address.
+		/// 	The target hostname of the machine providing the service.  This name can
+		/// 	be passed to functions like gethostbyname() to identify the host's IP address.
 		/// </param>
 		/// <param name="port">
-		///		The port, in network byte order, on which connections are accepted for this service.
+		/// 	The port, in network byte order, on which connections are accepted for this service.
 		/// </param>
 		/// <param name="txtLen">
-		///		The length of the txt record, in bytes.
+		/// 	The length of the txt record, in bytes.
 		/// </param>
 		/// <param name="txtRecord">
-		///		The service's primary txt record, in standard txt record format.
+		/// 	The service's primary txt record, in standard txt record format.
 		/// </param>
 		/// <param name="context">
-		///		The context pointer that was passed to the callout.
+		/// 	The context pointer that was passed to the callout.
 		/// </param>
-        public delegate void DNSServiceResolveReply(IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-            DNSServiceErrorType errorCode,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String hosttarget,
-            UInt16 port,
-            UInt16 txtLen,
-           [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)]byte[] txtRecord,
-            IntPtr context);
-
+		public delegate void DNSServiceResolveReply(IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		    DNSServiceErrorType errorCode,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String hosttarget,
+		    UInt16 port,
+		    UInt16 txtLen,
+		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)]byte[] txtRecord,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Resolve a service name discovered via DNSServiceBrowse()
 		/// to a target host name, port number, and txt record.
@@ -342,203 +343,203 @@ namespace ZeroconfService
 		/// services with multiple SRV or TXT records, DNSServiceQueryRecord() should be used.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A pointer to an uninitialized DNSServiceRef.
-		///		If the call succeeds then it initializes the DNSServiceRef, returns
-		///		kDNSServiceErr_NoError, and the resolve operation will run indefinitely until
-		///		the client terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
+		/// 	A pointer to an uninitialized DNSServiceRef.
+		/// 	If the call succeeds then it initializes the DNSServiceRef, returns
+		/// 	kDNSServiceErr_NoError, and the resolve operation will run indefinitely until
+		/// 	the client terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="flags">
-		///		Currently ignored, reserved for future use.
+		/// 	Currently ignored, reserved for future use.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		The interface on which to resolve the service. If this resolve call is
-		///		as a result of a currently active DNSServiceBrowse() operation, then the
-		///		interfaceIndex should be the index reported in the DNSServiceBrowseReply
-		///		callback. If this resolve call is using information previously saved
-		///		(e.g. in a preference file) for later use, then use interfaceIndex 0, because
-		///		the desired service may now be reachable via a different physical interface.
-		///		See "Constants for specifying an interface index" for more details.
+		/// 	The interface on which to resolve the service. If this resolve call is
+		/// 	as a result of a currently active DNSServiceBrowse() operation, then the
+		/// 	interfaceIndex should be the index reported in the DNSServiceBrowseReply
+		/// 	callback. If this resolve call is using information previously saved
+		/// 	(e.g. in a preference file) for later use, then use interfaceIndex 0, because
+		/// 	the desired service may now be reachable via a different physical interface.
+		/// 	See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="name">
-		///		The name of the service instance to be resolved,
-		///		as reported to the DNSServiceBrowseReply() callback.
+		/// 	The name of the service instance to be resolved,
+		/// 	as reported to the DNSServiceBrowseReply() callback.
 		/// </param>
 		/// <param name="regtype">
-		///		The type of the service instance to be resolved,
-		///		as reported to the DNSServiceBrowseReply() callback.
+		/// 	The type of the service instance to be resolved,
+		/// 	as reported to the DNSServiceBrowseReply() callback.
 		/// </param>
 		/// <param name="domain">
-		///		The domain of the service instance to be resolved,
-		///		as reported to the DNSServiceBrowseReply() callback.
+		/// 	The domain of the service instance to be resolved,
+		/// 	as reported to the DNSServiceBrowseReply() callback.
 		/// </param>
 		/// <param name="callBack">
-		///		The function to be called when a result is found, or if the call
-		///		asynchronously fails.
-		///	</param>
+		/// 	The function to be called when a result is found, or if the call
+		/// 	asynchronously fails.
+		/// </param>
 		/// <param name="context">
-		///		An application context pointer which is passed to the callback function (may be NULL).
+		/// 	An application context pointer which is passed to the callback function (may be NULL).
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
-		///		errors are delivered to the callback), otherwise returns an error code indicating
-		///		the error that occurred (the callback is never invoked and the DNSServiceRef
-		///		is not initialized.)
+		/// 	Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
+		/// 	errors are delivered to the callback), otherwise returns an error code indicating
+		/// 	the error that occurred (the callback is never invoked and the DNSServiceRef
+		/// 	is not initialized.)
 		/// </returns>
-        [DllImport("dnssd.dll")]
-        public static extern DNSServiceErrorType DNSServiceResolve(out IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-            DNSServiceResolveReply callBack,
-            IntPtr context);
-
+		[DllImport("dnssd.dll")]
+		public static extern DNSServiceErrorType DNSServiceResolve(out IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		    DNSServiceResolveReply callBack,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Callback method for DNSServiceQueryRecord()
 		/// </summary>
 		/// <param name="sdRef">
-		///		The DNSServiceRef initialized by DNSServiceQueryRecord().
+		/// 	The DNSServiceRef initialized by DNSServiceQueryRecord().
 		/// </param>
 		/// <param name="flags">
-		///		Possible values are kDNSServiceFlagsMoreComing and
-		///		kDNSServiceFlagsAdd.  The Add flag is NOT set for PTR records
-		///		with a ttl of 0, i.e. "Remove" events.
+		/// 	Possible values are kDNSServiceFlagsMoreComing and
+		/// 	kDNSServiceFlagsAdd.  The Add flag is NOT set for PTR records
+		/// 	with a ttl of 0, i.e. "Remove" events.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		The interface on which the query was resolved (the index for a given
-		///		interface is determined via the if_nametoindex() family of calls).
-		///		See "Constants for specifying an interface index" for more details.
+		/// 	The interface on which the query was resolved (the index for a given
+		/// 	interface is determined via the if_nametoindex() family of calls).
+		/// 	See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError on success, otherwise will
-		///		indicate the failure that occurred.  Other parameters are undefined if
-		///		errorCode is nonzero.
+		/// 	Will be kDNSServiceErr_NoError on success, otherwise will
+		/// 	indicate the failure that occurred.  Other parameters are undefined if
+		/// 	errorCode is nonzero.
 		/// </param>
 		/// <param name="fullname">
-		///		The resource record's full domain name.
+		/// 	The resource record's full domain name.
 		/// </param>
 		/// <param name="rrType">
-		///		The resource record's type (e.g. kDNSServiceType_PTR, kDNSServiceType_SRV, etc)
+		/// 	The resource record's type (e.g. kDNSServiceType_PTR, kDNSServiceType_SRV, etc)
 		/// </param>
 		/// <param name="rrClass">
-		///		The class of the resource record (usually kDNSServiceClass_IN).
+		/// 	The class of the resource record (usually kDNSServiceClass_IN).
 		/// </param>
 		/// <param name="rdLength">
-		///		The length, in bytes, of the resource record rdata.
+		/// 	The length, in bytes, of the resource record rdata.
 		/// </param>
 		/// <param name="rData">
-		///		The raw rdata of the resource record.
+		/// 	The raw rdata of the resource record.
 		/// </param>
 		/// <param name="ttl">
-		///		The resource record's time to live, in seconds.
+		/// 	The resource record's time to live, in seconds.
 		/// </param>
 		/// <param name="context">
-		///		The context pointer that was passed to the callout.
+		/// 	The context pointer that was passed to the callout.
 		/// </param>
 		public delegate void DNSServiceQueryReply(
-			IntPtr sdRef,
-			DNSServiceFlags flags,
-			UInt32 interfaceIndex,
-			DNSServiceErrorType errorCode,
+		    IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		    DNSServiceErrorType errorCode,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
-			DNSServiceType rrType,
-			DNSServiceClass rrClass,
-			UInt16 rdLength,
+		    DNSServiceType rrType,
+		    DNSServiceClass rrClass,
+		    UInt16 rdLength,
 		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)]byte[] rData,
-			UInt32 ttl,
-			IntPtr context);
-
+		    UInt32 ttl,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Query for an arbitrary DNS record.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A pointer to an uninitialized DNSServiceRef. If the call succeeds
-		///		then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
-		///		and the query operation will run indefinitely until the client
-		///		terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
+		/// 	A pointer to an uninitialized DNSServiceRef. If the call succeeds
+		/// 	then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
+		/// 	and the query operation will run indefinitely until the client
+		/// 	terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="flags">
-		///		Pass kDNSServiceFlagsLongLivedQuery to create a "long-lived" unicast
-		///		query in a non-local domain.  Without setting this flag, unicast queries
-		///		will be one-shot - that is, only answers available at the time of the call
-		///		will be returned.  By setting this flag, answers (including Add and Remove
-		///		events) that become available after the initial call is made will generate
-		///		callbacks.  This flag has no effect on link-local multicast queries.
+		/// 	Pass kDNSServiceFlagsLongLivedQuery to create a "long-lived" unicast
+		/// 	query in a non-local domain.  Without setting this flag, unicast queries
+		/// 	will be one-shot - that is, only answers available at the time of the call
+		/// 	will be returned.  By setting this flag, answers (including Add and Remove
+		/// 	events) that become available after the initial call is made will generate
+		/// 	callbacks.  This flag has no effect on link-local multicast queries.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		If non-zero, specifies the interface on which to issue the query
-		///		(the index for a given interface is determined via the if_nametoindex()
-		///		family of calls.)  Passing 0 causes the name to be queried for on all
-		///		interfaces. See "Constants for specifying an interface index" for more details.
+		/// 	If non-zero, specifies the interface on which to issue the query
+		/// 	(the index for a given interface is determined via the if_nametoindex()
+		/// 	family of calls.)  Passing 0 causes the name to be queried for on all
+		/// 	interfaces. See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="fullname">
-		///		The full domain name of the resource record to be queried for.
+		/// 	The full domain name of the resource record to be queried for.
 		/// </param>
 		/// <param name="rrType">
-		///		The numerical type of the resource record to be queried for
-		///		(e.g. kDNSServiceType_PTR, kDNSServiceType_SRV, etc)
+		/// 	The numerical type of the resource record to be queried for
+		/// 	(e.g. kDNSServiceType_PTR, kDNSServiceType_SRV, etc)
 		/// </param>
 		/// <param name="rrClass">
-		///		The class of the resource record (usually kDNSServiceClass_IN).
+		/// 	The class of the resource record (usually kDNSServiceClass_IN).
 		/// </param>
 		/// <param name="callBack">
-		///		The function to be called when a result is found, or if the call
-		///		asynchronously fails.
+		/// 	The function to be called when a result is found, or if the call
+		/// 	asynchronously fails.
 		/// </param>
 		/// <param name="context">
-		///		An application context pointer which is passed to the callback function (may be NULL).
+		/// 	An application context pointer which is passed to the callback function (may be NULL).
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
-		///		errors are delivered to the callback), otherwise returns an error code indicating
-		///		the error that occurred (the callback is never invoked and the DNSServiceRef
-		///		is not initialized.)
+		/// 	Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
+		/// 	errors are delivered to the callback), otherwise returns an error code indicating
+		/// 	the error that occurred (the callback is never invoked and the DNSServiceRef
+		/// 	is not initialized.)
 		/// </returns>
 		[DllImport("dnssd.dll")]
 		public static extern DNSServiceErrorType DNSServiceQueryRecord(out IntPtr sdRef,
-			DNSServiceFlags flags,
-			UInt32 interfaceIndex,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
-			DNSServiceType rrType,
-			DNSServiceClass rrClass,
-			DNSServiceQueryReply callBack,
-			IntPtr context);
-
-        /// <summary>
-        /// Callback method for DNSServiceEnumerateDomains()
-        /// </summary>
-        /// <param name="sdRef">
-		///		The DNSServiceRef initialized by DNSServiceEnumerateDomains().
+		    DNSServiceType rrType,
+		    DNSServiceClass rrClass,
+		    DNSServiceQueryReply callBack,
+		    IntPtr context);
+		
+		/// <summary>
+		/// Callback method for DNSServiceEnumerateDomains()
+		/// </summary>
+		/// <param name="sdRef">
+		/// 	The DNSServiceRef initialized by DNSServiceEnumerateDomains().
 		/// </param>
-        /// <param name="flags">
-		///		Possible values are:
-		///		kDNSServiceFlagsMoreComing
-		///		kDNSServiceFlagsAdd
-		///		kDNSServiceFlagsDefault
+		/// <param name="flags">
+		/// 	Possible values are:
+		/// 	kDNSServiceFlagsMoreComing
+		/// 	kDNSServiceFlagsAdd
+		/// 	kDNSServiceFlagsDefault
 		/// </param>
-        /// <param name="interfaceIndex">
-		///		Specifies the interface on which the domain exists.  (The index for a given
-		///		interface is determined via the if_nametoindex() family of calls.)
+		/// <param name="interfaceIndex">
+		/// 	Specifies the interface on which the domain exists.  (The index for a given
+		/// 	interface is determined via the if_nametoindex() family of calls.)
 		/// </param>
-        /// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError (0) on success, otherwise indicates
-		///		the failure that occurred (other parameters are undefined if errorCode is nonzero).
+		/// <param name="errorCode">
+		/// 	Will be kDNSServiceErr_NoError (0) on success, otherwise indicates
+		/// 	the failure that occurred (other parameters are undefined if errorCode is nonzero).
 		/// </param>
-        /// <param name="replyDomain">
-		///		The name of the domain.
+		/// <param name="replyDomain">
+		/// 	The name of the domain.
 		/// </param>
-        /// <param name="context">
-		///		The context pointer passed to DNSServiceEnumerateDomains.
+		/// <param name="context">
+		/// 	The context pointer passed to DNSServiceEnumerateDomains.
 		/// </param>
-        public delegate void DNSServiceDomainEnumReply(
-            IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-            DNSServiceErrorType errorCode,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
-            IntPtr context);
-
+		public delegate void DNSServiceDomainEnumReply(
+		    IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		    DNSServiceErrorType errorCode,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Asynchronously enumerate domains available for browsing and registration.
 		/// 
@@ -553,178 +554,178 @@ namespace ZeroconfService
 		/// label according to the escaping rules, and then display the resulting UTF-8 text.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A pointer to an uninitialized DNSServiceRef. If the call succeeds
-		///		then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
-		///		and the enumeration operation will run indefinitely until the client
-		///		terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
+		/// 	A pointer to an uninitialized DNSServiceRef. If the call succeeds
+		/// 	then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
+		/// 	and the enumeration operation will run indefinitely until the client
+		/// 	terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="flags">
-		///		Possible values are:
-		///		kDNSServiceFlagsBrowseDomains to enumerate domains recommended for browsing.
-		///		kDNSServiceFlagsRegistrationDomains to enumerate domains recommended for registration.
+		/// 	Possible values are:
+		/// 	kDNSServiceFlagsBrowseDomains to enumerate domains recommended for browsing.
+		/// 	kDNSServiceFlagsRegistrationDomains to enumerate domains recommended for registration.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		If non-zero, specifies the interface on which to look for domains.
-		///		(the index for a given interface is determined via the if_nametoindex()
-		///		family of calls.)  Most applications will pass 0 to enumerate domains on
-		///		all interfaces. See "Constants for specifying an interface index" for more details.
+		/// 	If non-zero, specifies the interface on which to look for domains.
+		/// 	(the index for a given interface is determined via the if_nametoindex()
+		/// 	family of calls.)  Most applications will pass 0 to enumerate domains on
+		/// 	all interfaces. See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="callBack">
-		///		The function to be called when a domain is found or the call asynchronously fails.
+		/// 	The function to be called when a domain is found or the call asynchronously fails.
 		/// </param>
 		/// <param name="context">
-		///		An application context pointer which is passed to the callback function (may be NULL).
+		/// 	An application context pointer which is passed to the callback function (may be NULL).
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
-		///		errors are delivered to the callback), otherwise returns an error code indicating
-		///		the error that occurred (the callback is not invoked and the DNSServiceRef
-		///		is not initialized.)
+		/// 	Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
+		/// 	errors are delivered to the callback), otherwise returns an error code indicating
+		/// 	the error that occurred (the callback is not invoked and the DNSServiceRef
+		/// 	is not initialized.)
 		/// </returns>
-        [DllImport("dnssd.dll")]
-        public static extern DNSServiceErrorType DNSServiceEnumerateDomains(
-            out IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-            DNSServiceDomainEnumReply callBack,
-            IntPtr context);
-
-        /// <summary>
-        /// Callback method for DNSServiceRegister()
-        /// </summary>
-        /// <param name="sdRef">
-		///		The DNSServiceRef initialized by DNSServiceRegister().
+		[DllImport("dnssd.dll")]
+		public static extern DNSServiceErrorType DNSServiceEnumerateDomains(
+		    out IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		    DNSServiceDomainEnumReply callBack,
+		    IntPtr context);
+		
+		/// <summary>
+		/// Callback method for DNSServiceRegister()
+		/// </summary>
+		/// <param name="sdRef">
+		/// 	The DNSServiceRef initialized by DNSServiceRegister().
 		/// </param>
-        /// <param name="flags">
-		///		Currently unused, reserved for future use.
+		/// <param name="flags">
+		/// 	Currently unused, reserved for future use.
 		/// </param>
-        /// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError on success, otherwise will
-		///		indicate the failure that occurred (including name conflicts,
-		///		if the kDNSServiceFlagsNoAutoRename flag was used when registering.)
-		///		Other parameters are undefined if errorCode is nonzero.
+		/// <param name="errorCode">
+		/// 	Will be kDNSServiceErr_NoError on success, otherwise will
+		/// 	indicate the failure that occurred (including name conflicts,
+		/// 	if the kDNSServiceFlagsNoAutoRename flag was used when registering.)
+		/// 	Other parameters are undefined if errorCode is nonzero.
 		/// </param>
-        /// <param name="name">
-		///		The service name registered (if the application did not specify a name in
-		///		DNSServiceRegister(), this indicates what name was automatically chosen).
+		/// <param name="name">
+		/// 	The service name registered (if the application did not specify a name in
+		/// 	DNSServiceRegister(), this indicates what name was automatically chosen).
 		/// </param>
-        /// <param name="regtype">
-		///		The type of service registered, as it was passed to the callout.
+		/// <param name="regtype">
+		/// 	The type of service registered, as it was passed to the callout.
 		/// </param>
-        /// <param name="domain">
-		///		The domain on which the service was registered (if the application did not
-		///		specify a domain in DNSServiceRegister(), this indicates the default domain
-		///		on which the service was registered).
+		/// <param name="domain">
+		/// 	The domain on which the service was registered (if the application did not
+		/// 	specify a domain in DNSServiceRegister(), this indicates the default domain
+		/// 	on which the service was registered).
 		/// </param>
-        /// <param name="context">
-		///		The context pointer that was passed to the callout.
+		/// <param name="context">
+		/// 	The context pointer that was passed to the callout.
 		/// </param>
-        public delegate void DNSServiceRegisterReply(
-            IntPtr sdRef,
-            DNSServiceFlags flags,
-            DNSServiceErrorType errorCode,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-            IntPtr context);
-
+		public delegate void DNSServiceRegisterReply(
+		    IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    DNSServiceErrorType errorCode,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Register a service that is discovered via Browse() and Resolve() calls.
 		/// </summary>
 		/// <param name="sdRef">
-		///		A pointer to an uninitialized DNSServiceRef. If the call succeeds
-		///		then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
-		///		and the registration will remain active indefinitely until the client
-		///		terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
+		/// 	A pointer to an uninitialized DNSServiceRef. If the call succeeds
+		/// 	then it initializes the DNSServiceRef, returns kDNSServiceErr_NoError,
+		/// 	and the registration will remain active indefinitely until the client
+		/// 	terminates it by passing this DNSServiceRef to DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="flags">
-		///		Indicates the renaming behavior on name conflict (most applications will pass 0).
-		///		See flag definitions above for details.
+		/// 	Indicates the renaming behavior on name conflict (most applications will pass 0).
+		/// 	See flag definitions above for details.
 		/// </param>
 		/// <param name="interfaceIndex">
-		///		If non-zero, specifies the interface on which to register the service
-		///		(the index for a given interface is determined via the if_nametoindex() family of calls.)
-		///		Most applications will pass 0 to register on all available interfaces.
-		///		See "Constants for specifying an interface index" for more details.
+		/// 	If non-zero, specifies the interface on which to register the service
+		/// 	(the index for a given interface is determined via the if_nametoindex() family of calls.)
+		/// 	Most applications will pass 0 to register on all available interfaces.
+		/// 	See "Constants for specifying an interface index" for more details.
 		/// </param>
 		/// <param name="name">
-		///		If non-NULL, specifies the service name to be registered.
-		///		Most applications will not specify a name, in which case the computer
-		///		name is used (this name is communicated to the client via the callback).
-		///		If a name is specified, it must be 1-63 bytes of UTF-8 text.
-		///		If the name is longer than 63 bytes it will be automatically truncated
-		///		to a legal length, unless the NoAutoRename flag is set,
-		///		in which case kDNSServiceErr_BadParam will be returned.
+		/// 	If non-NULL, specifies the service name to be registered.
+		/// 	Most applications will not specify a name, in which case the computer
+		/// 	name is used (this name is communicated to the client via the callback).
+		/// 	If a name is specified, it must be 1-63 bytes of UTF-8 text.
+		/// 	If the name is longer than 63 bytes it will be automatically truncated
+		/// 	to a legal length, unless the NoAutoRename flag is set,
+		/// 	in which case kDNSServiceErr_BadParam will be returned.
 		/// </param>
 		/// <param name="regtype">
-		///		The service type followed by the protocol, separated by a dot
-		///		(e.g. "_ftp._tcp"). The service type must be an underscore, followed
-		///		by 1-14 characters, which may be letters, digits, or hyphens.
-		///		The transport protocol must be "_tcp" or "_udp". New service types
-		///		should be registered at http://www.dns-sd.org/ServiceTypes.html
+		/// 	The service type followed by the protocol, separated by a dot
+		/// 	(e.g. "_ftp._tcp"). The service type must be an underscore, followed
+		/// 	by 1-14 characters, which may be letters, digits, or hyphens.
+		/// 	The transport protocol must be "_tcp" or "_udp". New service types
+		/// 	should be registered at http://www.dns-sd.org/ServiceTypes.html
 		/// </param>
 		/// <param name="domain">
-		///		If non-NULL, specifies the domain on which to advertise the service.
-		///		Most applications will not specify a domain, instead automatically
-		///		registering in the default domain(s).
+		/// 	If non-NULL, specifies the domain on which to advertise the service.
+		/// 	Most applications will not specify a domain, instead automatically
+		/// 	registering in the default domain(s).
 		/// </param>
 		/// <param name="host">
-		///		If non-NULL, specifies the SRV target host name.  Most applications
-		///		will not specify a host, instead automatically using the machine's
-		///		default host name(s).  Note that specifying a non-NULL host does NOT
-		///		create an address record for that host - the application is responsible
-		///		for ensuring that the appropriate address record exists, or creating it
-		///		via DNSServiceRegisterRecord().
+		/// 	If non-NULL, specifies the SRV target host name.  Most applications
+		/// 	will not specify a host, instead automatically using the machine's
+		/// 	default host name(s).  Note that specifying a non-NULL host does NOT
+		/// 	create an address record for that host - the application is responsible
+		/// 	for ensuring that the appropriate address record exists, or creating it
+		/// 	via DNSServiceRegisterRecord().
 		/// </param>
 		/// <param name="port">
-		///		The port, in network byte order, on which the service accepts connections.
-		///		Pass 0 for a "placeholder" service (i.e. a service that will not be discovered
-		///		by browsing, but will cause a name conflict if another client tries to
-		///		register that same name).  Most clients will not use placeholder services.
+		/// 	The port, in network byte order, on which the service accepts connections.
+		/// 	Pass 0 for a "placeholder" service (i.e. a service that will not be discovered
+		/// 	by browsing, but will cause a name conflict if another client tries to
+		/// 	register that same name).  Most clients will not use placeholder services.
 		/// </param>
 		/// <param name="txtLen">
-		///		The length of the txtRecord, in bytes.  Must be zero if the txtRecord is NULL.
+		/// 	The length of the txtRecord, in bytes.  Must be zero if the txtRecord is NULL.
 		/// </param>
 		/// <param name="txtRecord">
-		///		The TXT record rdata. A non-NULL txtRecord MUST be a properly formatted DNS
-		///		TXT record, i.e. [length byte] [data] [length byte] [data] ...
-		///		Passing NULL for the txtRecord is allowed as a synonym for txtLen=1, txtRecord="",
-		///		i.e. it creates a TXT record of length one containing a single empty string.
-		///		RFC 1035 doesn't allow a TXT record to contain *zero* strings, so a single empty
-		///		string is the smallest legal DNS TXT record.
+		/// 	The TXT record rdata. A non-NULL txtRecord MUST be a properly formatted DNS
+		/// 	TXT record, i.e. [length byte] [data] [length byte] [data] ...
+		/// 	Passing NULL for the txtRecord is allowed as a synonym for txtLen=1, txtRecord="",
+		/// 	i.e. it creates a TXT record of length one containing a single empty string.
+		/// 	RFC 1035 doesn't allow a TXT record to contain *zero* strings, so a single empty
+		/// 	string is the smallest legal DNS TXT record.
 		/// </param>
 		/// <param name="callBack">
-		///		The function to be called when the registration completes or asynchronously
-		///		fails.  The client MAY pass NULL for the callback -  The client will NOT be notified
-		///		of the default values picked on its behalf, and the client will NOT be notified of any
-		///		asynchronous errors (e.g. out of memory errors, etc.) that may prevent the registration
-		///		of the service.  The client may NOT pass the NoAutoRename flag if the callback is NULL.
-		///		The client may still deregister the service at any time via DNSServiceRefDeallocate().
+		/// 	The function to be called when the registration completes or asynchronously
+		/// 	fails.  The client MAY pass NULL for the callback -  The client will NOT be notified
+		/// 	of the default values picked on its behalf, and the client will NOT be notified of any
+		/// 	asynchronous errors (e.g. out of memory errors, etc.) that may prevent the registration
+		/// 	of the service.  The client may NOT pass the NoAutoRename flag if the callback is NULL.
+		/// 	The client may still deregister the service at any time via DNSServiceRefDeallocate().
 		/// </param>
 		/// <param name="context">
-		///		An application context pointer which is passed to the callback function (may be NULL).
+		/// 	An application context pointer which is passed to the callback function (may be NULL).
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
-		///		errors are delivered to the callback), otherwise returns an error code indicating
-		///		the error that occurred (the callback is never invoked and the DNSServiceRef
-		///		is not initialized.)
+		/// 	Returns kDNSServiceErr_NoError on succeses (any subsequent, asynchronous
+		/// 	errors are delivered to the callback), otherwise returns an error code indicating
+		/// 	the error that occurred (the callback is never invoked and the DNSServiceRef
+		/// 	is not initialized.)
 		/// </returns>
-        [DllImport("dnssd.dll")]
-        public static extern DNSServiceErrorType DNSServiceRegister(
-            out IntPtr sdRef,
-            DNSServiceFlags flags,
-            UInt32 interfaceIndex,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-           [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String host,
-            UInt16 port,
-            UInt16 txtLen,
-            byte[] txtRecord,
-            DNSServiceRegisterReply callBack,
-            IntPtr context);
-
+		[DllImport("dnssd.dll")]
+		public static extern DNSServiceErrorType DNSServiceRegister(
+		    out IntPtr sdRef,
+		    DNSServiceFlags flags,
+		    UInt32 interfaceIndex,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String host,
+		    UInt16 port,
+		    UInt16 txtLen,
+		    byte[] txtRecord,
+		    DNSServiceRegisterReply callBack,
+		    IntPtr context);
+		
 		/// <summary>
 		/// Update a registered resource record.  The record must either be:
 		///   - The primary txt record of a service registered via DNSServiceRegister()
@@ -732,26 +733,26 @@ namespace ZeroconfService
 		///   - An individual record registered by DNSServiceRegisterRecord()
 		/// </summary>
 		/// <param name="sdRef">
-		///		A DNSServiceRef that was initialized by DNSServiceRegister() or DNSServiceCreateConnection().
+		/// 	A DNSServiceRef that was initialized by DNSServiceRegister() or DNSServiceCreateConnection().
 		/// </param>
 		/// <param name="recordRef">
-		///		A DNSRecordRef initialized by DNSServiceAddRecord, or NULL to update the service's primary txt record.
+		/// 	A DNSRecordRef initialized by DNSServiceAddRecord, or NULL to update the service's primary txt record.
 		/// </param>
 		/// <param name="flags">
-		///		Currently ignored, reserved for future use.
+		/// 	Currently ignored, reserved for future use.
 		/// </param>
 		/// <param name="rdLength">
-		///		The length, in bytes, of the new rdata.
+		/// 	The length, in bytes, of the new rdata.
 		/// </param>
 		/// <param name="rData">
-		///		The new rdata to be contained in the updated resource record.
+		/// 	The new rdata to be contained in the updated resource record.
 		/// </param>
 		/// <param name="ttl">
-		///		The time to live of the updated resource record, in seconds.
-		///		Specify a value of 0 for the TTL to allow mDNSResponder to automatically choose the default value.
+		/// 	The time to live of the updated resource record, in seconds.
+		/// 	Specify a value of 0 for the TTL to allow mDNSResponder to automatically choose the default value.
 		/// </param>
 		/// <returns>
-		///		Returns kDNSServiceErr_NoError on success, otherwise returns an error code indicating the error that occurred.
+		/// 	Returns kDNSServiceErr_NoError on success, otherwise returns an error code indicating the error that occurred.
 		/// </returns>
 		[DllImport("dnssd.dll")]
 		public static extern DNSServiceErrorType DNSServiceUpdateRecord(
@@ -761,77 +762,79 @@ namespace ZeroconfService
 			UInt16 rdLength,
 			[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)]byte[] rData,
 			UInt32 ttl);
+		
+	}
+	
+	class UTF8Marshaler : ICustomMarshaler
+	{
+		private string cookie;
+		private int nativeDataSize = 0;
+		
+		public UTF8Marshaler(string cookie)
+		{
+			this.cookie = cookie;
+		}
+		
+		public Object MarshalNativeToManaged(IntPtr pNativeData)
+		{
+			if (pNativeData == IntPtr.Zero) return null;
+			
+			List<byte> bytes = new List<byte>();
+			byte readbyte;
+			int i = 0;
+			while ((readbyte = Marshal.ReadByte(pNativeData, i)) != 0)
+			{
+				bytes.Add(readbyte);
+				i++;
+			}
+			
+			byte[] utf8bytes = bytes.ToArray();
+			
+			Encoding u8e = Encoding.UTF8;
+			
+			return u8e.GetString(utf8bytes);
+		}
+		
+		public IntPtr MarshalManagedToNative(Object managedObject)
+		{
+			String inString = (String)managedObject;
+			
+			if (inString == null) return IntPtr.Zero;
+			
+			Encoding u8e = Encoding.UTF8;
+			byte[] utf8bytes = u8e.GetBytes(inString);
+			
+			IntPtr ptr = Marshal.AllocHGlobal(utf8bytes.Length + 1);
+			
+			for (int i = 0; i < utf8bytes.Length; i++)
+			{
+				Marshal.WriteByte(ptr, i, utf8bytes[i]);
+			}
+			Marshal.WriteByte(ptr, utf8bytes.Length, 0);
+			
+			nativeDataSize = utf8bytes.Length + 1;
+			
+			return ptr;
+		}
+		
+		public int GetNativeDataSize()
+		{
+			return nativeDataSize;
+		}
+		
+		public void CleanUpManagedData(Object managedObject)
+		{
+		}
+		
+		public void CleanUpNativeData(IntPtr pNativeData)
+		{
+			if (pNativeData == IntPtr.Zero) return;
+			Marshal.FreeHGlobal(pNativeData);
+		}
 
-    }
-
-    class UTF8Marshaler : ICustomMarshaler
-    {
-        private string cookie;
-        private int nativeDataSize = 0;
-
-        public UTF8Marshaler(string cookie)
-        {
-            this.cookie = cookie;
-        }
-
-        public Object MarshalNativeToManaged(IntPtr pNativeData)
-        {
-            if (pNativeData == IntPtr.Zero) return null;
-
-            List<byte> bytes = new List<byte>();
-            byte readbyte;
-            int i = 0;
-            while ((readbyte = Marshal.ReadByte(pNativeData, i)) != 0)
-            {
-                bytes.Add(readbyte);
-                i++;
-            }
-
-            byte[] utf8bytes = bytes.ToArray();
-
-            Encoding u8e = Encoding.UTF8;
-            
-            return u8e.GetString(utf8bytes);
-        }
-
-        public IntPtr MarshalManagedToNative(Object managedObject)
-        {
-            String inString = (String)managedObject;
-
-            if (inString == null) return IntPtr.Zero;
-
-            Encoding u8e = Encoding.UTF8;
-            byte[] utf8bytes = u8e.GetBytes(inString);
-
-            IntPtr ptr = Marshal.AllocHGlobal(utf8bytes.Length + 1);
-
-            for (int i = 0; i < utf8bytes.Length; i++)
-                Marshal.WriteByte(ptr, i, utf8bytes[i]);
-            Marshal.WriteByte(ptr, utf8bytes.Length, 0);
-
-            nativeDataSize = utf8bytes.Length + 1;
-
-            return ptr;
-        }
-
-        public int GetNativeDataSize()
-        {
-            return nativeDataSize;
-        }
-
-        public void CleanUpManagedData(Object managedObject)
-        {
-        }
-
-        public void CleanUpNativeData(IntPtr pNativeData)
-        {
-            if (pNativeData == IntPtr.Zero) return;
-            Marshal.FreeHGlobal(pNativeData);
-        }
-
-        public static ICustomMarshaler GetInstance(String cookie)
-        {
-            return new UTF8Marshaler(cookie);
-        }
-    }
+		public static ICustomMarshaler GetInstance(String cookie)
+		{
+			return new UTF8Marshaler(cookie);
+		}
+	}
 }

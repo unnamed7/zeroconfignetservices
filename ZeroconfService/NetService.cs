@@ -9,46 +9,46 @@ using System.Windows.Forms;
 
 namespace ZeroconfService
 {
-    /// <summary>
-    /// <para>
-    /// The NetService class represents a network service that your application publishes
-    /// or uses as a client. This class, along with the browser class
-    /// <see cref="NetServiceBrowser">NetServiceBrowser</see> use multicast DNS to
-    /// communicate accross the local network.
-    /// </para>
-    /// <para>
-    /// Your application can use this class to either publish information about
-    /// a service, or as a client to retrieve information about another service.
-    /// </para>
-    /// <para>
-    /// If you intend to publish a service, you must setup the service to publish and
-    /// acquire a port on which the socket will recieve connections. You can then create
-    /// a NetService instance to represent your service and publish it.
-    /// </para>
-    /// <para>
-    /// If you intend to resolve a service, you can either use <see cref="NetServiceBrowser">NetServiceBrowser</see>
-    /// to discover services of a given type, or you can create a new NetService object
-    /// to resolve information about an known existing service.
-    /// See <see cref="NetService(string,string,string)">NetService()</see>
-    /// for information about creating new net services.
-    /// </para>
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Network operations are performed asynchronously and are returned to your application
-    /// via events fired from within this class. Events are typically fire in your
-    /// application's main run loop, see <see cref="DNSService">DNSService</see> for information
-    /// about controlling asynchronous events.
-    /// </para>
-    /// <para>
-    /// It is important to note that this class uses the same asynchronous method to
-    /// publish records as it does to fire events. So if you are simply publishing a service,
-    /// you must still ensure that the <see cref="DNSService">DNSService</see> parent class
-    /// is properly placed into a run loop.
-    /// </para>
-    /// </remarks>
-    public sealed class NetService : DNSService, IDisposable
-    {
+	/// <summary>
+	/// <para>
+	/// The NetService class represents a network service that your application publishes
+	/// or uses as a client. This class, along with the browser class
+	/// <see cref="NetServiceBrowser">NetServiceBrowser</see> use multicast DNS to
+	/// communicate accross the local network.
+	/// </para>
+	/// <para>
+	/// Your application can use this class to either publish information about
+	/// a service, or as a client to retrieve information about another service.
+	/// </para>
+	/// <para>
+	/// If you intend to publish a service, you must setup the service to publish and
+	/// acquire a port on which the socket will recieve connections. You can then create
+	/// a NetService instance to represent your service and publish it.
+	/// </para>
+	/// <para>
+	/// If you intend to resolve a service, you can either use <see cref="NetServiceBrowser">NetServiceBrowser</see>
+	/// to discover services of a given type, or you can create a new NetService object
+	/// to resolve information about an known existing service.
+	/// See <see cref="NetService(string,string,string)">NetService()</see>
+	/// for information about creating new net services.
+	/// </para>
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Network operations are performed asynchronously and are returned to your application
+	/// via events fired from within this class. Events are typically fire in your
+	/// application's main run loop, see <see cref="DNSService">DNSService</see> for information
+	/// about controlling asynchronous events.
+	/// </para>
+	/// <para>
+	/// It is important to note that this class uses the same asynchronous method to
+	/// publish records as it does to fire events. So if you are simply publishing a service,
+	/// you must still ensure that the <see cref="DNSService">DNSService</see> parent class
+	/// is properly placed into a run loop.
+	/// </para>
+	/// </remarks>
+	public sealed class NetService : DNSService, IDisposable
+	{
 		/// <summary>
 		/// Represents the method that will handle <see cref="DidPublishService">DidPublishService</see>
 		/// events from a <see cref="NetService">NetService</see> instance.
@@ -74,17 +74,17 @@ namespace ZeroconfService
 		/// </summary>
 		public event ServiceNotPublished DidNotPublishService;
 
-        /// <summary>
-        /// Represents the method that will handle <see cref="DidResolveService">DidResolveService</see>
-        /// events from a <see cref="NetService">NetService</see> instance.
-        /// </summary>
-        /// <param name="service">Sender of this event.</param>
-        public delegate void ServiceResolved(NetService service);
+		/// <summary>
+		/// Represents the method that will handle <see cref="DidResolveService">DidResolveService</see>
+		/// events from a <see cref="NetService">NetService</see> instance.
+		/// </summary>
+		/// <param name="service">Sender of this event.</param>
+		public delegate void ServiceResolved(NetService service);
 
-        /// <summary>
-        /// Occurs when a service was resolved.
-        /// </summary>
-        public event ServiceResolved DidResolveService;
+		/// <summary>
+		/// Occurs when a service was resolved.
+		/// </summary>
+		public event ServiceResolved DidResolveService;
 
 		/// <summary>
 		/// Represents the method that will handle <see cref="DidNotResolveService">DidNotResolveService</see>
@@ -99,20 +99,20 @@ namespace ZeroconfService
 		/// </summary>
 		public event ServiceNotResolved DidNotResolveService;
 
-        /// <summary>
-        /// Represents the method that will handle <see cref="DidUpdateTXT">DidUpdateTXT</see>
-        /// events from a <see cref="NetService">NetService</see> instance.
-        /// </summary>
-        /// <param name="service">Sender of this event.</param>
-        public delegate void ServiceTXTUpdated(NetService service);
+		/// <summary>
+		/// Represents the method that will handle <see cref="DidUpdateTXT">DidUpdateTXT</see>
+		/// events from a <see cref="NetService">NetService</see> instance.
+		/// </summary>
+		/// <param name="service">Sender of this event.</param>
+		public delegate void ServiceTXTUpdated(NetService service);
 
-        /// <summary>
-        /// Occurs when the TXT record for a given service was updated.
-        /// </summary>
-        /// <remarks>
-        /// This event is not fired after you update the TXT record for an event yourself.
-        /// </remarks>
-        public event ServiceTXTUpdated DidUpdateTXT;
+		/// <summary>
+		/// Occurs when the TXT record for a given service was updated.
+		/// </summary>
+		/// <remarks>
+		/// This event is not fired after you update the TXT record for an event yourself.
+		/// </remarks>
+		public event ServiceTXTUpdated DidUpdateTXT;
 
 		private String mName;
 		private String mType;
@@ -132,57 +132,57 @@ namespace ZeroconfService
 
 		private mDNSImports.DNSServiceQueryReply queryReplyCb;
 		private mDNSImports.DNSServiceQueryReply ipLookupReplyCb;
-        private mDNSImports.DNSServiceResolveReply resolveReplyCb;
-        private mDNSImports.DNSServiceRegisterReply registerReplyCb;
+		private mDNSImports.DNSServiceResolveReply resolveReplyCb;
+		private mDNSImports.DNSServiceRegisterReply registerReplyCb;
 
 		private bool disposed = false;
 
 		private System.Threading.Timer resolveTimer;
 
-        /// <summary>
-        /// Initializes a new instance of the NetService class for resolving.
-        /// </summary>
-        /// <param name="domain">The domain of the service. For the local domain, use <c>"local."</c> not <c>""</c>.</param>
-        /// <param name="type"><para>The network service type.</para>
-        /// <para>This must include both the transport type (<c>"_tcp."</c> or <c>".udp"</c>)
-        /// and the service name prefixed with an underscore(<c>"_"</c>). For example, to search
-        /// for an HTTP service on TCP you would use <c>"_http._tcp."</c></para></param>
-        /// <param name="name">The name of the service to resolve.</param>
-        /// <remarks>
-        /// <para>This constructor is the appropriate constructor used to resolve a service.
-        /// You can not use this constructor to publish a service.</para>
-        /// </remarks>
-        public NetService(string domain, string type, string name)
-        {
-            mDomain = domain;
-            mType = type;
-            mName = name;
-        }
+		/// <summary>
+		/// Initializes a new instance of the NetService class for resolving.
+		/// </summary>
+		/// <param name="domain">The domain of the service. For the local domain, use <c>"local."</c> not <c>""</c>.</param>
+		/// <param name="type"><para>The network service type.</para>
+		/// <para>This must include both the transport type (<c>"_tcp."</c> or <c>".udp"</c>)
+		/// and the service name prefixed with an underscore(<c>"_"</c>). For example, to search
+		/// for an HTTP service on TCP you would use <c>"_http._tcp."</c></para></param>
+		/// <param name="name">The name of the service to resolve.</param>
+		/// <remarks>
+		/// <para>This constructor is the appropriate constructor used to resolve a service.
+		/// You can not use this constructor to publish a service.</para>
+		/// </remarks>
+		public NetService(string domain, string type, string name)
+		{
+			mDomain = domain;
+			mType = type;
+			mName = name;
+		}
 
-        /// <summary>
-        /// Initializes a new instance of the NetService class for publishing.
-        /// </summary>
-        /// <param name="domain">
-        /// <para>The domain of the service. For the local domain, use <c>"local."</c> not <c>""</c>.</para>
-        /// <para>To us the default domain, simply parse <c>""</c>.</para>
-        /// </param>
-        /// <param name="type"><para>The network service type.</para>
-        /// <para>This must include both the transport type (<c>"_tcp."</c> or <c>".udp"</c>)
-        /// and the service name prefixed with an underscore(<c>"_"</c>). For example, to search
-        /// for an HTTP service on TCP you would use <c>"_http._tcp."</c></para></param>
-        /// <param name="name">The name of the service. This name must be unique.</param>
-        /// <param name="port">The port number on which your service is available.</param>
-        /// <remarks>
-        /// <para>This constructor is the appropriate constructor used to publish a service.
-        /// You can not use this constructor to resolve a service.</para>
-        /// </remarks>
-        public NetService(string domain, string type, string name, int port)
-        {
-            mDomain = domain;
-            mType = type;
-            mName = name;
-            mPort = port;
-        }
+		/// <summary>
+		/// Initializes a new instance of the NetService class for publishing.
+		/// </summary>
+		/// <param name="domain">
+		/// <para>The domain of the service. For the local domain, use <c>"local."</c> not <c>""</c>.</para>
+		/// <para>To us the default domain, simply parse <c>""</c>.</para>
+		/// </param>
+		/// <param name="type"><para>The network service type.</para>
+		/// <para>This must include both the transport type (<c>"_tcp."</c> or <c>".udp"</c>)
+		/// and the service name prefixed with an underscore(<c>"_"</c>). For example, to search
+		/// for an HTTP service on TCP you would use <c>"_http._tcp."</c></para></param>
+		/// <param name="name">The name of the service. This name must be unique.</param>
+		/// <param name="port">The port number on which your service is available.</param>
+		/// <remarks>
+		/// <para>This constructor is the appropriate constructor used to publish a service.
+		/// You can not use this constructor to resolve a service.</para>
+		/// </remarks>
+		public NetService(string domain, string type, string name, int port)
+		{
+			mDomain = domain;
+			mType = type;
+			mName = name;
+			mPort = port;
+		}
 
 		/// <summary>
 		/// Standard Destructor.
@@ -366,19 +366,19 @@ namespace ZeroconfService
 			}
 		}
 
-        /// <summary>
-        /// Starts a resolve process with a timeout.
-        /// </summary>
-        /// <param name="seconds">The maximum number of seconds to attempt a resolve.</param>
-        public void ResolveWithTimeout(int seconds)
-        {
+		/// <summary>
+		/// Starts a resolve process with a timeout.
+		/// </summary>
+		/// <param name="seconds">The maximum number of seconds to attempt a resolve.</param>
+		public void ResolveWithTimeout(int seconds)
+		{
 			Stop();
 			
 			resolveReplyCb = new mDNSImports.DNSServiceResolveReply(ResolveReply);
-            gchSelfA = GCHandle.Alloc(this);
-            
+			gchSelfA = GCHandle.Alloc(this);
+			
 			DNSServiceErrorType err;
-            err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, (IntPtr)gchSelfA);
+			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, (IntPtr)gchSelfA);
 
 			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
 			{
@@ -395,7 +395,7 @@ namespace ZeroconfService
 					DidNotResolveService(this, exception);
 				}
 			}
-        }
+		}
 
 		/// <summary>
 		/// Called with the result of the call to DNSServiceResolve().
@@ -438,7 +438,7 @@ namespace ZeroconfService
 		/// <param name="context">
 		///		The context pointer that was passed to the callout.
 		///	</param>
-        private void ResolveReply(IntPtr sdRef,
+		private void ResolveReply(IntPtr sdRef,
 		                 DNSServiceFlags flags,
 		                          UInt32 interfaceIndex,
 		             DNSServiceErrorType errorCode,
@@ -448,7 +448,7 @@ namespace ZeroconfService
 		                          UInt16 txtLen,
 		                          byte[] txtRecord,
 		                          IntPtr context)
-        {
+		{
 			if (errorCode == DNSServiceErrorType.kDNSServiceErr_NoError)
 			{
 				// Update internal variables
@@ -491,7 +491,7 @@ namespace ZeroconfService
 					DidNotResolveService(this, exception);
 				}
 			}
-        }
+		}
 
 		/// <summary>
 		/// This method begins the process of looking up the IP address(es) associated with the current hostname.
@@ -778,31 +778,31 @@ namespace ZeroconfService
 			}
 		}
 
-        /// <summary>
-        /// Returns a <c>byte[]</c> object representing a TXT record
-        /// from a given dictionary.
-        /// </summary>
-        /// <param name="dict">
+		/// <summary>
+		/// Returns a <c>byte[]</c> object representing a TXT record
+		/// from a given dictionary.
+		/// </summary>
+		/// <param name="dict">
 		///		A dictionary containing a TXT record.
 		/// </param>
-        /// <returns>
+		/// <returns>
 		///		A <c>byte[]</c> object representing TXT data formed from <c>dict</c>.
 		/// </returns>
-        /// <remarks>
-        /// <para>
+		/// <remarks>
+		/// <para>
 		///		The dictionary must contain a set of key / value pairs representing a TXT record.
 		/// </para>
-        /// <para>
+		/// <para>
 		///		The key objects must be <see cref="System.String">String</see> objects.
 		///		These will be converted to UTF-8 format by this method.
 		/// </para>
-        /// <para>
+		/// <para>
 		///		The value objects must be either <see cref="System.String">String</see> objects or byte[] data.
 		///		String values will be converted to UTF-8 format by this method.
-        /// </para>
-        /// </remarks>
-        public static byte[] DataFromTXTRecordDictionary(IDictionary dict)
-        {
+		/// </para>
+		/// </remarks>
+		public static byte[] DataFromTXTRecordDictionary(IDictionary dict)
+		{
 			// The format of TXT Records:
 			// The TXT Record consists of one or more strings, each of which consists of a single length byte,
 			// followed by 0-255 bytes of text. An example of such a string is:
@@ -828,10 +828,10 @@ namespace ZeroconfService
 			}
 
 			List<byte[]> entries = new List<byte[]>();
-            int totalLength = 0;
-            foreach (DictionaryEntry kvp in dict)
-            {
-                String key = (String)kvp.Key;
+			int totalLength = 0;
+			foreach (DictionaryEntry kvp in dict)
+			{
+				String key = (String)kvp.Key;
 				byte[] keyData = Encoding.UTF8.GetBytes(key);
 
 				byte[] valueData;
@@ -867,30 +867,30 @@ namespace ZeroconfService
 
 				entries.Add(entry);
 				totalLength += entry.Length;
-            }
+			}
 
-            byte[] result = new byte[totalLength];
-            int i = 0;
-            foreach (byte[] entry in entries)
-            {
+			byte[] result = new byte[totalLength];
+			int i = 0;
+			foreach (byte[] entry in entries)
+			{
 				Buffer.BlockCopy(entry, 0, result, i, entry.Length);
 				i += entry.Length;
-            }
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        /// <summary>
-        /// Returns an <c>IDictionary</c> representing a TXT record.
-        /// </summary>
-        /// <param name="txtRecord">
+		/// <summary>
+		/// Returns an <c>IDictionary</c> representing a TXT record.
+		/// </summary>
+		/// <param name="txtRecord">
 		///		A <c>byte[]</c> object encoding of a TXT record.
 		/// </param>
-        /// <returns>
+		/// <returns>
 		///		A dictionary representing a TXT record.
 		///	</returns>
-        public static IDictionary DictionaryFromTXTRecordData(byte[] txtRecord)
-        {
+		public static IDictionary DictionaryFromTXTRecordData(byte[] txtRecord)
+		{
 			// The format of TXT Records:
 			// The TXT Record consists of one or more strings, each of which consists of a single length byte,
 			// followed by 0-255 bytes of text. An example of such a string is:
@@ -908,12 +908,12 @@ namespace ZeroconfService
 
 			if(txtRecord == null) return null;
 
-            Hashtable dict = new Hashtable();
+			Hashtable dict = new Hashtable();
 			
 			int i = 0;
-            while (i < txtRecord.Length)
-            {
-                byte length = txtRecord[i];
+			while (i < txtRecord.Length)
+			{
+				byte length = txtRecord[i];
 				if (length > 0)
 				{
 					byte[] data = new byte[length];
@@ -957,11 +957,11 @@ namespace ZeroconfService
 					dict.Add(key, value);
 				}
 
-                i += (length + 1);
+				i += (length + 1);
 			}
 
-            return dict;
-        }
+			return dict;
+		}
 
 		/// <summary>
 		/// Gets the domain of the service.
@@ -1007,15 +1007,15 @@ namespace ZeroconfService
 			get { return mHostName; }
 		}
 
-        /// <summary>
-        /// <para>Gets an IList object representing the available addresses of the
-        /// resolved service.</para>
-        /// <para>The objects in the list are <see cref="System.Net.IPEndPoint">IPEndPoint</see>s</para>
-        /// </summary>
-        public IList Addresses
-        {
-            get { return mAddresses; }
-        }		
+		/// <summary>
+		/// <para>Gets an IList object representing the available addresses of the
+		/// resolved service.</para>
+		/// <para>The objects in the list are <see cref="System.Net.IPEndPoint">IPEndPoint</see>s</para>
+		/// </summary>
+		public IList Addresses
+		{
+			get { return mAddresses; }
+		}		
 
 		/// <summary>
 		/// Gets or the TXT record data.
@@ -1103,5 +1103,5 @@ namespace ZeroconfService
 			}
 			return true;
 		}
-    }
+	}
 }
