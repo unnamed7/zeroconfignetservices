@@ -1,4 +1,8 @@
-﻿I needed two major changes:
+﻿This library was based off of David Hammerton's original ZeroconfNetServices.
+
+These are the big changes (made by Robbie Hanson of Deusty.com) from the original code release.
+
+I needed two major changes:
 
 1.) The ability to update TXT records after publishing.
 2.) The ability to monitor TXT records for updates.
@@ -51,3 +55,6 @@ And of course:
 
 Updated BrowserServiceSample to reflect new capabilities.
 Updated PublishServiceSample to reflect new capabilities.
+
+
+Ongoing changes will not be reported in this text file. Instead, consult the subversion repository changelog.

@@ -186,15 +186,19 @@ namespace ZeroconfService
 		{
 			System.ComponentModel.ISynchronizeInvoke invokeable = GetInvokeObject();
 
-			if (invokeable != null)
+			try
 			{
-				return invokeable.Invoke(method, args);
-			}
+				if (invokeable != null)
+				{
+					return invokeable.Invoke(method, args);
+				}
 
-			if (mAllowMultithreadedCallbacks)
-			{
-				return method.DynamicInvoke(args);
+				if (mAllowMultithreadedCallbacks)
+				{
+					return method.DynamicInvoke(args);
+				}
 			}
+			catch { }
 
 			return null;
 		}
