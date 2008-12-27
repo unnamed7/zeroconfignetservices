@@ -104,6 +104,34 @@ namespace ZeroconfService
 	
 	class mDNSImports
 	{
+		public const String DNSServiceProperty_DaemonVersion = "DaemonVersion";
+
+		/// <summary>
+		/// Gets the specified property.
+		/// </summary>
+		/// <param name="name">
+		///		The requested attribute.
+		///		Currently the only attribute defined is DNSServiceProperty_DaemonVersion.
+		/// </param>
+		/// <param name="result">
+		///		Place to store result.
+		///		For retrieving DaemonVersion, this should be the address of a UInt32.
+		///	</param>
+		/// <param name="size">
+		///		On return, contains size of the result.
+		///		For DaemonVersion, the returned size is always sizeof(UInt32, but
+		///		future attributes could be defined which return variable-sized results.
+		/// </param>
+		/// <returns>
+		///		Returns kDNSServiceErr_NoError on success,
+		/// 	otherwise returns an error code indicating the specific failure that occurred.
+		/// </returns>
+		[DllImport("dnssd.dll")]
+		public static extern DNSServiceErrorType DNSServiceGetProperty(
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
+		    ref IntPtr result,
+		    ref UInt32 size);
+
 		/// <summary>
 		/// Access underlying Unix domain socket for an initialized DNSServiceRef.
 		/// The DNS Service Discovery implmementation uses this socket to communicate between
