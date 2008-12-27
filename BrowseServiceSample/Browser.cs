@@ -74,9 +74,23 @@ namespace BrowseServiceSample
 
         private void startStopButton_Click(object sender, EventArgs e)
         {
-			GC.Collect();
+			if (!mBrowsing)
+			{
+				try
+				{
+					float bonjourVersion = NetService.GetVersion();
+					Console.WriteLine("Bonjour Version: {0}", bonjourVersion);
+				}
+				catch
+				{
+					String message = "Bonjour is not installed!";
+					MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            if (!mBrowsing)
+					Application.Exit();
+				}
+			}
+
+			if (!mBrowsing)
             {
                 string service = serviceTextBox.Text;
 
@@ -102,6 +116,7 @@ namespace BrowseServiceSample
 
                 mBrowsing = false;
             }
+
             if (mBrowsing)
             {
                 startStopButton.Text = "Stop";

@@ -22,6 +22,19 @@ namespace PublishServiceSample
 
         private void DoPublish()
         {
+			try
+			{
+				float bonjourVersion = NetService.GetVersion();
+				Console.WriteLine("Bonjour Version: {0}", bonjourVersion);
+			}
+			catch
+			{
+				String message = "Bonjour is not installed!";
+				MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+				Application.Exit();
+			}
+
             String domain = "";
 			String type = serviceTypeTextBox.Text;
 			String name = serviceNameTextBox.Text;
