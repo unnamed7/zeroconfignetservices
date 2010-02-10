@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
+using System.Diagnostics;
 
 namespace ZeroconfService
 {
@@ -17,12 +18,19 @@ namespace ZeroconfService
 	{
 		string s = null;
 		string f = null;
+        Exception innerException;
 		DNSServiceErrorType e = DNSServiceErrorType.kDNSServiceErr_NoError;
 
 		internal DNSServiceException(string s)
 		{
 			this.s = s;
 		}
+
+        internal DNSServiceException(string s, Exception inner)
+        {
+            this.s = s;
+            this.innerException = inner;
+        }
 
 		internal DNSServiceException(string function, DNSServiceErrorType error)
 		{
@@ -49,6 +57,17 @@ namespace ZeroconfService
 			get { return s; }
 		}
 
+        /// <summary>
+        /// Returns the Exception that is the root cause of the exception.
+        /// </summary>
+        /// <returns>The first exception thrown in a chain of exceptions.
+        /// If the InnerException property of the current exception is a null reference, this property returns the current exception.
+        /// </returns>
+        public override Exception GetBaseException()
+        {
+            return innerException ?? this;
+        }
+
 		/// <summary>
 		/// Gets the function name (if possible) that returned the underlying error
 		/// </summary>
@@ -73,40 +92,44 @@ namespace ZeroconfService
 		// Provides a mapping from sdRef's to their associated WatchSocket's
 		private Hashtable sdRefToSocketMapping = Hashtable.Synchronized(new Hashtable());
 
-		public static float GetVersion()
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Version DaemonVersion
 		{
-			int version = 0;
-			IntPtr result = IntPtr.Zero;
-
-			try
-			{
-				UInt32 size = (UInt32)Marshal.SizeOf(typeof(UInt32));
-
-				result = Marshal.AllocCoTaskMem((Int32)size);
-				
-				DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(mDNSImports.DNSServiceProperty_DaemonVersion, ref result, ref size);
-
-				if (error != DNSServiceErrorType.kDNSServiceErr_NoError)
-				{
-					throw new DNSServiceException("DNSServiceGetProperty", error);
-				}
-
-				version = result.ToInt32();
-			}
-			finally
-			{
-				if (result != IntPtr.Zero) Marshal.FreeCoTaskMem(result);
-			}
-
-			// I have found no documenation that states how to parse a number into it's major/minor parts.
-			// However, I have a few examples:
-			// 1180500 = 118.5
-			// 1760300 = 176.3
-
-			int majorVersion = version / 10000;
-			int minorVersion = version % 1000;
-
-			return (float)majorVersion + (float)(minorVersion / 1000f);
+            get
+            {
+                int majorVersion = 0;
+                int minorVersion = 0;
+                IntPtr result = IntPtr.Zero;
+                try
+                {
+                    UInt32 size = (UInt32)Marshal.SizeOf(typeof(UInt32));
+                    result = Marshal.AllocCoTaskMem((Int32)size);
+                    try
+                    {
+                        DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(mDNSImports.DNSServiceProperty_DaemonVersion, result, ref size);
+                        if (error != DNSServiceErrorType.kDNSServiceErr_NoError)
+                        {
+                            throw new DNSServiceException("DNSServiceGetProperty", error);
+                        }
+                    }
+                    catch (DllNotFoundException e)
+                    {
+                        throw new DNSServiceException("Unable to connect to system daemon service", e);
+                    }
+                    int version = Marshal.ReadInt32(result);
+                    // Apple documentation states that the version number value is as follows.
+                    // Major part of the build number * 10000 + minor part of the build number * 100 
+                    majorVersion = version / 10000;
+                    minorVersion = (version % 10000) / 100;
+                }
+                finally
+                {
+                    if (result != IntPtr.Zero) Marshal.FreeCoTaskMem(result);
+                }
+                return new Version(majorVersion, minorVersion);
+            }
 		}
 
 		private void PollInvokeable(IntPtr sdRef)
@@ -117,7 +140,7 @@ namespace ZeroconfService
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("Got an exception on DNSServiceProcessResult (Unamanaged, so via user callback?)\n{0}{1}", e, e.StackTrace);
+				Debug.WriteLine(String.Format("Got an exception on DNSServiceProcessResult (Unamanaged, so via user callback?)\n{0}{1}", e, e.StackTrace));
 			}
 		}
 		private delegate void PollInvokeableDelegate(IntPtr sdRef);

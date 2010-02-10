@@ -129,7 +129,7 @@ namespace ZeroconfService
 		[DllImport("dnssd.dll")]
 		public static extern DNSServiceErrorType DNSServiceGetProperty(
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-		    ref IntPtr result,
+		    IntPtr result,
 		    ref UInt32 size);
 
 		/// <summary>
@@ -301,7 +301,7 @@ namespace ZeroconfService
 		    UInt32 interfaceIndex,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-		    DNSServiceBrowseReply callBack,
+            IntPtr callBack,
 		    IntPtr context);
 
 		
@@ -348,11 +348,11 @@ namespace ZeroconfService
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String hosttarget,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))] String fullname,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))] String hosttarget,
 		    UInt16 port,
 		    UInt16 txtLen,
-		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)]byte[] txtRecord,
+		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] byte[] txtRecord,
 		    IntPtr context);
 		
 		/// <summary>
@@ -420,7 +420,7 @@ namespace ZeroconfService
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
 		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-		    DNSServiceResolveReply callBack,
+		    IntPtr callBack,
 		    IntPtr context);
 		
 		/// <summary>
@@ -805,8 +805,8 @@ namespace ZeroconfService
 		
 		public Object MarshalNativeToManaged(IntPtr pNativeData)
 		{
-			if (pNativeData == IntPtr.Zero) return null;
-			
+			if (pNativeData == IntPtr.Zero)
+                return null;
 			List<byte> bytes = new List<byte>();
 			byte readbyte;
 			int i = 0;
@@ -815,33 +815,19 @@ namespace ZeroconfService
 				bytes.Add(readbyte);
 				i++;
 			}
-			
-			byte[] utf8bytes = bytes.ToArray();
-			
-			Encoding u8e = Encoding.UTF8;
-			
-			return u8e.GetString(utf8bytes);
+			return Encoding.UTF8.GetString(bytes.ToArray());
 		}
 		
 		public IntPtr MarshalManagedToNative(Object managedObject)
 		{
 			String inString = (String)managedObject;
-			
-			if (inString == null) return IntPtr.Zero;
-			
-			Encoding u8e = Encoding.UTF8;
-			byte[] utf8bytes = u8e.GetBytes(inString);
-			
-			IntPtr ptr = Marshal.AllocHGlobal(utf8bytes.Length + 1);
-			
-			for (int i = 0; i < utf8bytes.Length; i++)
-			{
-				Marshal.WriteByte(ptr, i, utf8bytes[i]);
-			}
-			Marshal.WriteByte(ptr, utf8bytes.Length, 0);
-			
+			if (inString == null)
+                return IntPtr.Zero;
+			byte[] utf8bytes = Encoding.UTF8.GetBytes(inString);
 			nativeDataSize = utf8bytes.Length + 1;
-			
+            IntPtr ptr = Marshal.AllocHGlobal(nativeDataSize);
+            Marshal.Copy(utf8bytes, 0, ptr, utf8bytes.Length);
+			Marshal.WriteByte(ptr, utf8bytes.Length, 0);			
 			return ptr;
 		}
 		

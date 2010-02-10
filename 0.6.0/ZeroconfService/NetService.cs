@@ -6,6 +6,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ZeroconfService
 {
@@ -189,7 +190,7 @@ namespace ZeroconfService
 		/// </summary>
 		~NetService()
 		{
-			Console.WriteLine("NetService: Finalize");
+			Debug.WriteLine("NetService: Finalize");
 
 			// Call our helper method.
 			// Specifying "false" signifies that the GC triggered the clean up.
@@ -220,7 +221,7 @@ namespace ZeroconfService
 		/// </summary>
 		public void Dispose()
 		{
-			Console.WriteLine("NetService: Dispose");
+			Debug.WriteLine("NetService: Dispose");
 
 			// Call our helper method.
 			// Specifying "true" signifies that the object user triggered the clean up.
@@ -375,10 +376,10 @@ namespace ZeroconfService
 			Stop();
 			
 			resolveReplyCb = new mDNSImports.DNSServiceResolveReply(ResolveReply);
-			gchSelfA = GCHandle.Alloc(this);
+            gchSelfA = GCHandle.Alloc(resolveReplyCb);
 			
 			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, (IntPtr)gchSelfA);
+			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, Marshal.GetFunctionPointerForDelegate(resolveReplyCb), IntPtr.Zero);
 
 			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
 			{

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
@@ -22,18 +23,16 @@ namespace PublishServiceSample
 
         private void DoPublish()
         {
-			try
-			{
-				float bonjourVersion = NetService.GetVersion();
-				Console.WriteLine("Bonjour Version: {0}", bonjourVersion);
-			}
-			catch
-			{
-				String message = "Bonjour is not installed!";
-				MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-				Application.Exit();
-			}
+            try
+            {
+                Debug.WriteLine(String.Format("Bonjour Version: {0}", NetService.DaemonVersion));
+            }
+            catch (Exception ex)
+            {
+                String message = ex is DNSServiceException ? "Bonjour is not installed!" : ex.Message;
+                MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Application.Exit();
+            }
 
             String domain = "";
 			String type = serviceTypeTextBox.Text;

@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
@@ -20,16 +21,24 @@ namespace BrowseServiceSample
         {
 			InitializeComponent();
 
-			Console.WriteLine("{0} Browser()", System.Threading.Thread.CurrentThread.ManagedThreadId);
+			Debug.WriteLine(String.Format("{0} Browser()", System.Threading.Thread.CurrentThread.ManagedThreadId));
 			
 			nsBrowser.InvokeableObject = this;
 			nsBrowser.DidFindService += new NetServiceBrowser.ServiceFound(nsBrowser_DidFindService);
 			nsBrowser.DidRemoveService += new NetServiceBrowser.ServiceRemoved(nsBrowser_DidRemoveService);
+            nsBrowser.DidFindDomain += new NetServiceBrowser.DomainFound(nsBrowser_DidFindDomain);
+            nsBrowser.SearchForRegistrationDomains();
+            //nsBrowser.SearchForBrowseableDomains();
+        }
+
+        void nsBrowser_DidFindDomain(NetServiceBrowser browser, string domainName, bool moreComing)
+        {
+            Debug.WriteLine(browser, domainName);
         }
 
         void nsBrowser_DidRemoveService(NetServiceBrowser browser, NetService service, bool moreComing)
         {
-			Console.WriteLine("{0}: nsBrowser_DidRemoveService: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, service.Name);
+			Debug.WriteLine(String.Format("{0}: nsBrowser_DidRemoveService: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, service.Name));
 
             servicesList.BeginUpdate();
             foreach (ListViewItem item in servicesList.Items)
@@ -45,7 +54,7 @@ namespace BrowseServiceSample
         ArrayList waitingAdd = new ArrayList();
         void nsBrowser_DidFindService(NetServiceBrowser browser, NetService service, bool moreComing)
         {
-			Console.WriteLine("{0}: nsBrowser_DidFindService: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, service.Name);
+			Debug.WriteLine(String.Format("{0}: nsBrowser_DidFindService: {1}", System.Threading.Thread.CurrentThread.ManagedThreadId, service.Name));
 
 			service.DidUpdateTXT += new NetService.ServiceTXTUpdated(ns_DidUpdateTXT);
 			service.DidResolveService += new NetService.ServiceResolved(ns_DidResolveService);
@@ -78,14 +87,12 @@ namespace BrowseServiceSample
 			{
 				try
 				{
-					float bonjourVersion = NetService.GetVersion();
-					Console.WriteLine("Bonjour Version: {0}", bonjourVersion);
+					Debug.WriteLine(String.Format("Bonjour Version: {0}", NetService.DaemonVersion));
 				}
-				catch
+				catch (Exception ex)
 				{
-					String message = "Bonjour is not installed!";
+					String message = ex is DNSServiceException ? "Bonjour is not installed!" : ex.Message;
 					MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 					Application.Exit();
 				}
 			}
@@ -94,9 +101,15 @@ namespace BrowseServiceSample
             {
                 string service = serviceTextBox.Text;
 
-                nsBrowser.SearchForService(service, "");
-
-                mBrowsing = true;
+                try
+                {
+                    nsBrowser.SearchForService(service, "");
+                    mBrowsing = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Critical Error");
+                }
             }
             else
             {
@@ -168,7 +181,7 @@ namespace BrowseServiceSample
 
 		void ns_DidResolveService(NetService service)
 		{
-			Console.WriteLine("-------------------------------------------------------------Did Resolve Service: {0}", service.Name);
+            Debug.WriteLine(String.Format("Did Resolve Service: {0}", service.Name), "**************");
 
 			// We only update the GUI if the service is currently selected
 			ListView.SelectedListViewItemCollection slvic = servicesList.SelectedItems;
@@ -213,7 +226,7 @@ namespace BrowseServiceSample
 
 		void ns_DidUpdateTXT(NetService service)
         {
-			Console.WriteLine("-------------------------------------------------------------Did Update TXT Record: {0}", service.Name);
+            Debug.WriteLine(String.Format("Did Update TXT Record: {0}", service.Name), "**************");
 
 			// We only update the GUI if the service is currently selected
 			ListView.SelectedListViewItemCollection slvic = servicesList.SelectedItems;
