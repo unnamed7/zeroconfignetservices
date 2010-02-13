@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfService", "ZeroconfService\ZeroconfService.csproj", "{AD5CF7A9-93C4-48DD-ACD8-38DD434F1491}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrowseServiceSample", "BrowseServiceSample\BrowseServiceSample.csproj", "{68630B54-FEA1-49AC-8D1A-833D6B66EC7E}"
