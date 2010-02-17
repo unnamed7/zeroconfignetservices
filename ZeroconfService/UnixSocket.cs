@@ -158,10 +158,10 @@ namespace ZeroconfService
 		public override IAsyncResult BeginPoll(int microSeconds, SelectMode mode, AsyncCallback callback, Object state)
 		{
 			if(inPoll)
-				throw new Exception("Attempting to begin a new poll while already polling.");
+				throw new ApplicationException("Attempting to begin a new poll while already polling.");
 
 			if(stopping)
-				throw new Exception("Attempting to begin a new poll after stopping.");
+                throw new ApplicationException("Attempting to begin a new poll after stopping.");
 
 			inPoll = true;
 			return base.BeginPoll(microSeconds, mode, callback, state);

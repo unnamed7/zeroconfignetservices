@@ -101,11 +101,14 @@ namespace ZeroconfService
 		kDNSServiceErr_BadTime           = -65559,
 		kDNSServiceErr_Timeout           = -72007  /* NSNetServiceError */
 	}
-	
-	class mDNSImports
-	{
-		public const String DNSServiceProperty_DaemonVersion = "DaemonVersion";
 
+    internal enum DNSServiceProperty
+    {
+        DaemonVersion
+    }
+
+    internal sealed class mDNSImports
+	{
 		/// <summary>
 		/// Gets the specified property.
 		/// </summary>
@@ -128,8 +131,8 @@ namespace ZeroconfService
 		/// </returns>
 		[DllImport("dnssd.dll")]
 		public static extern DNSServiceErrorType DNSServiceGetProperty(
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-		    ref IntPtr result,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String name,
+		    IntPtr result,
 		    ref UInt32 size);
 
 		/// <summary>
@@ -250,9 +253,9 @@ namespace ZeroconfService
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String serviceName,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String serviceName,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String replyDomain,
 		    IntPtr context);
 		
 		/// <summary>
@@ -299,8 +302,8 @@ namespace ZeroconfService
 		public static extern DNSServiceErrorType DNSServiceBrowse(out IntPtr sdRef,
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String domain,
 		    DNSServiceBrowseReply callBack,
 		    IntPtr context);
 
@@ -348,11 +351,11 @@ namespace ZeroconfService
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String hosttarget,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] String fullname,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] String hosttarget,
 		    UInt16 port,
 		    UInt16 txtLen,
-		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)]byte[] txtRecord,
+		   [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 7)] byte[] txtRecord,
 		    IntPtr context);
 		
 		/// <summary>
@@ -417,9 +420,9 @@ namespace ZeroconfService
 		public static extern DNSServiceErrorType DNSServiceResolve(out IntPtr sdRef,
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String domain,
 		    DNSServiceResolveReply callBack,
 		    IntPtr context);
 		
@@ -470,7 +473,7 @@ namespace ZeroconfService
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String fullname,
 		    DNSServiceType rrType,
 		    DNSServiceClass rrClass,
 		    UInt16 rdLength,
@@ -528,7 +531,7 @@ namespace ZeroconfService
 		public static extern DNSServiceErrorType DNSServiceQueryRecord(out IntPtr sdRef,
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String fullname,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String fullname,
 		    DNSServiceType rrType,
 		    DNSServiceClass rrClass,
 		    DNSServiceQueryReply callBack,
@@ -565,7 +568,7 @@ namespace ZeroconfService
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String replyDomain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String replyDomain,
 		    IntPtr context);
 		
 		/// <summary>
@@ -652,9 +655,9 @@ namespace ZeroconfService
 		    IntPtr sdRef,
 		    DNSServiceFlags flags,
 		    DNSServiceErrorType errorCode,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String domain,
 		    IntPtr context);
 		
 		/// <summary>
@@ -744,10 +747,10 @@ namespace ZeroconfService
 		    out IntPtr sdRef,
 		    DNSServiceFlags flags,
 		    UInt32 interfaceIndex,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String name,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String regtype,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String domain,
-		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(UTF8Marshaler))]String host,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String name,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String regtype,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String domain,
+		   [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))]String host,
 		    UInt16 port,
 		    UInt16 txtLen,
 		    byte[] txtRecord,
@@ -791,78 +794,5 @@ namespace ZeroconfService
 			[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 3)]byte[] rData,
 			UInt32 ttl);
 		
-	}
-	
-	class UTF8Marshaler : ICustomMarshaler
-	{
-		private string cookie;
-		private int nativeDataSize = 0;
-		
-		public UTF8Marshaler(string cookie)
-		{
-			this.cookie = cookie;
-		}
-		
-		public Object MarshalNativeToManaged(IntPtr pNativeData)
-		{
-			if (pNativeData == IntPtr.Zero) return null;
-			
-			List<byte> bytes = new List<byte>();
-			byte readbyte;
-			int i = 0;
-			while ((readbyte = Marshal.ReadByte(pNativeData, i)) != 0)
-			{
-				bytes.Add(readbyte);
-				i++;
-			}
-			
-			byte[] utf8bytes = bytes.ToArray();
-			
-			Encoding u8e = Encoding.UTF8;
-			
-			return u8e.GetString(utf8bytes);
-		}
-		
-		public IntPtr MarshalManagedToNative(Object managedObject)
-		{
-			String inString = (String)managedObject;
-			
-			if (inString == null) return IntPtr.Zero;
-			
-			Encoding u8e = Encoding.UTF8;
-			byte[] utf8bytes = u8e.GetBytes(inString);
-			
-			IntPtr ptr = Marshal.AllocHGlobal(utf8bytes.Length + 1);
-			
-			for (int i = 0; i < utf8bytes.Length; i++)
-			{
-				Marshal.WriteByte(ptr, i, utf8bytes[i]);
-			}
-			Marshal.WriteByte(ptr, utf8bytes.Length, 0);
-			
-			nativeDataSize = utf8bytes.Length + 1;
-			
-			return ptr;
-		}
-		
-		public int GetNativeDataSize()
-		{
-			return nativeDataSize;
-		}
-		
-		public void CleanUpManagedData(Object managedObject)
-		{
-		}
-		
-		public void CleanUpNativeData(IntPtr pNativeData)
-		{
-			if (pNativeData == IntPtr.Zero) return;
-			Marshal.FreeHGlobal(pNativeData);
-		}
-
-		public static ICustomMarshaler GetInstance(String cookie)
-		{
-			return new UTF8Marshaler(cookie);
-		}
 	}
 }

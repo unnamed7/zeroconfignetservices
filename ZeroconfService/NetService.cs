@@ -6,6 +6,8 @@ using System.Threading;
 using System.Runtime.InteropServices;
 
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.IO;
 
 namespace ZeroconfService
 {
@@ -189,14 +191,14 @@ namespace ZeroconfService
 		/// </summary>
 		~NetService()
 		{
-			Console.WriteLine("NetService: Finalize");
+			Debug.WriteLine("NetService: Finalize");
 
 			// Call our helper method.
 			// Specifying "false" signifies that the GC triggered the clean up.
-			CleanUp(false);
+			Dispose(false);
 		}
 
-		private void CleanUp(bool disposing)
+		private void Dispose(bool disposing)
 		{
 			if (!disposed)
 			{
@@ -220,11 +222,11 @@ namespace ZeroconfService
 		/// </summary>
 		public void Dispose()
 		{
-			Console.WriteLine("NetService: Dispose");
+			Debug.WriteLine("NetService: Dispose");
 
 			// Call our helper method.
 			// Specifying "true" signifies that the object user triggered the clean up.
-			CleanUp(true);
+			Dispose(true);
 
 			// Now suppress finialization
 			GC.SuppressFinalize(this);
@@ -283,8 +285,8 @@ namespace ZeroconfService
 
 			DNSServiceErrorType err;
 
-			UInt16 txtRecordLen = (UInt16)((TXTRecordData != null) ? TXTRecordData.Length : 0);
-			UInt16 port = (UInt16)System.Net.IPAddress.HostToNetworkOrder((short)mPort);
+			ushort txtRecordLen = (TXTRecordData != null) ? Convert.ToUInt16(TXTRecordData.Length) : (ushort)0;
+			ushort port = (ushort)System.Net.IPAddress.HostToNetworkOrder((short)mPort);
 
 			err = mDNSImports.DNSServiceRegister(out sdRefA, 0, 0, Name, Type, Domain, null, port, txtRecordLen, TXTRecordData, registerReplyCb, (IntPtr)gchSelfA);
 
@@ -375,10 +377,10 @@ namespace ZeroconfService
 			Stop();
 			
 			resolveReplyCb = new mDNSImports.DNSServiceResolveReply(ResolveReply);
-			gchSelfA = GCHandle.Alloc(this);
+            gchSelfA = GCHandle.Alloc(resolveReplyCb);
 			
 			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, (IntPtr)gchSelfA);
+			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, IntPtr.Zero);
 
 			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
 			{
@@ -801,8 +803,41 @@ namespace ZeroconfService
 		///		String values will be converted to UTF-8 format by this method.
 		/// </para>
 		/// </remarks>
-		public static byte[] DataFromTXTRecordDictionary(IDictionary dict)
-		{
+        public static byte[] DataFromTXTRecordDictionary(IDictionary dict)
+        {
+            return DataFromTXTRecordDictionary(dict, false);
+        }
+
+        /// <summary>
+        /// Returns a <c>byte[]</c> object representing a TXT record
+        /// from a given dictionary.
+        /// </summary>
+        /// <param name="dict">
+        ///		A dictionary containing a TXT record.
+        /// </param>
+        /// <param name="allowRecordTruncation">
+        ///     A value of true will allow the enocoder to truncate the value data to fit
+        ///     within the remainder of bytes for the given key. A value of false will throw an
+        ///     <see cref="System.ArgumentException">ArgumentException</see> if the data will not fit.
+        /// </param>
+        /// <returns>
+        ///		A <c>byte[]</c> object representing TXT data formed from <c>dict</c>.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        ///		The dictionary must contain a set of key / value pairs representing a TXT record.
+        /// </para>
+        /// <para>
+        ///		The key objects must be <see cref="System.String">String</see> objects.
+        ///		These will be converted to UTF-8 format by this method.
+        /// </para>
+        /// <para>
+        ///		The value objects must be either <see cref="System.String">String</see> objects or byte[] data.
+        ///		String values will be converted to UTF-8 format by this method.
+        /// </para>
+        /// </remarks>
+        public static byte[] DataFromTXTRecordDictionary(IDictionary dict, bool allowRecordTruncation)
+        {
 			// The format of TXT Records:
 			// The TXT Record consists of one or more strings, each of which consists of a single length byte,
 			// followed by 0-255 bytes of text. An example of such a string is:
@@ -818,24 +853,32 @@ namespace ZeroconfService
 			//
 			// -Adapted from "Zero Configuration Networking, The Definitive Guide", page 66
 
-			// Todo: Solve dilemma of txt record entries bigger than 255 bytes.
-			// See what apple does in their implementation, and follow suite.
-
-			if (dict == null)
+            const int maxRecordEntrySize = 255;
+            const int maxUsableRecordEntrySize = 253; // Subtraction of the leading byte count and the '=' char
+            if (dict == null || dict.Count == 0)
 			{
 				byte[] emptyTXTRecord = { 0 };
 				return emptyTXTRecord;
 			}
 
-			List<byte[]> entries = new List<byte[]>();
-			int totalLength = 0;
+			//List<byte[]> entries = new List<byte[]>();
+			//int totalLength = 0;
+            MemoryStream dataStream = new MemoryStream();
 			foreach (DictionaryEntry kvp in dict)
 			{
-				String key = (String)kvp.Key;
-				byte[] keyData = Encoding.UTF8.GetBytes(key);
-
+                string keyString = (string)kvp.Key;
+                if (keyString.Contains("="))
+                {
+                    throw new ArgumentException(string.Format("Invalid character found in a dictionary key. Problem key: \"{0}\"", keyString));
+                }
+                byte[] keyData = Encoding.UTF8.GetBytes(keyString);
+                if (keyData.Length > maxUsableRecordEntrySize)
+                {
+                    throw new ArgumentException(
+                        String.Format("The dictonary key \"{0}\" is too long. Its UTF8 encoded byte length must be less than {1} bytes",
+                        keyString, maxUsableRecordEntrySize + 1)); 
+                }
 				byte[] valueData;
-
 				if (kvp.Value is string)
 				{
 					String value = (String)kvp.Value;
@@ -845,51 +888,41 @@ namespace ZeroconfService
 				{
 					valueData = (byte[])kvp.Value;
 				}
-
-				byte[] entry;
-
-				if (valueData == null)
-				{
-					byte length = (byte)(keyData.Length);
-					entry = new byte[length+1];
-					entry[0] = length;
-					Buffer.BlockCopy(keyData, 0, entry, 1, keyData.Length);
-				}
-				else
-				{
-					byte length = (byte)(keyData.Length + 1 + valueData.Length);
-					entry = new byte[length+1];
-					entry[0] = length;
-					Buffer.BlockCopy(keyData, 0, entry, 1, keyData.Length);
-					entry[keyData.Length + 1] = (byte)'=';
-					Buffer.BlockCopy(valueData, 0, entry, keyData.Length + 2, valueData.Length);
-				}
-
-				entries.Add(entry);
-				totalLength += entry.Length;
+                int entryLength = keyData.Length + (valueData == null? 0 : valueData.Length) + 2;
+                int usableValueDataSize = valueData.Length;
+                if (entryLength > maxRecordEntrySize)
+                {
+                    if (allowRecordTruncation)
+                    {
+                        entryLength = maxRecordEntrySize;
+                        usableValueDataSize = maxUsableRecordEntrySize - keyData.Length;
+                    }
+                    else
+                    {
+                        throw new ArgumentException(
+                            String.Format("The dictonary key \"{0}\" value contains too much data. The maximum data length allowed for this key is {1}",
+                            keyString, Math.Max(0, maxUsableRecordEntrySize - keyData.Length)), "dict");
+                    }
+                }
+                dataStream.WriteByte((byte)entryLength);
+                dataStream.Write(keyData, 0, keyData.Length);
+                dataStream.WriteByte((byte)'=');
+                dataStream.Write(valueData, 0, usableValueDataSize);
 			}
-
-			byte[] result = new byte[totalLength];
-			int i = 0;
-			foreach (byte[] entry in entries)
-			{
-				Buffer.BlockCopy(entry, 0, result, i, entry.Length);
-				i += entry.Length;
-			}
-
-			return result;
+			return dataStream.ToArray();
 		}
 
 		/// <summary>
 		/// Returns an <c>IDictionary</c> representing a TXT record.
 		/// </summary>
-		/// <param name="txtRecord">
+		/// <param name="txtRecords">
 		///		A <c>byte[]</c> object encoding of a TXT record.
 		/// </param>
 		/// <returns>
 		///		A dictionary representing a TXT record.
 		///	</returns>
-		public static IDictionary DictionaryFromTXTRecordData(byte[] txtRecord)
+        [Obsolete("Retained for API compatiblity with OS X NSNetServices funtionality")]
+		public static IDictionary DictionaryFromTXTRecordData(byte[] txtRecords)
 		{
 			// The format of TXT Records:
 			// The TXT Record consists of one or more strings, each of which consists of a single length byte,
@@ -906,23 +939,24 @@ namespace ZeroconfService
 			//
 			// -Adapted from "Zero Configuration Networking, The Definitive Guide", page 66
 
-			if(txtRecord == null) return null;
-
 			Hashtable dict = new Hashtable();
+			if(txtRecords == null)
+                return dict;
+
 			
-			int i = 0;
-			while (i < txtRecord.Length)
+			int sourceBufferOffset = 0;
+			while (sourceBufferOffset < txtRecords.Length)
 			{
-				byte length = txtRecord[i];
-				if (length > 0)
+				byte recordLength = txtRecords[sourceBufferOffset];
+				if (recordLength > 0)
 				{
-					byte[] data = new byte[length];
+					byte[] data = new byte[recordLength];
 
 					byte equalsat = 0;
 
-					for (int j = 0; j < length; j++)
+					for (int j = 0; j < recordLength; j++)
 					{
-						data[j] = txtRecord[i + 1 + j];
+						data[j] = txtRecords[sourceBufferOffset + 1 + j];
 						byte equalsbyte = (byte)'=';
 						if (data[j] == equalsbyte)
 						{
@@ -941,7 +975,7 @@ namespace ZeroconfService
 					if (equalsat > 0)
 					{
 						key = Encoding.UTF8.GetString(data, 0, equalsat);
-						byte valuelen = (byte)(length - (equalsat + 1));
+						byte valuelen = (byte)(recordLength - (equalsat + 1));
 						value = new byte[valuelen];
 						for (int j = 0; j < valuelen; j++)
 						{
@@ -957,7 +991,7 @@ namespace ZeroconfService
 					dict.Add(key, value);
 				}
 
-				i += (length + 1);
+				sourceBufferOffset += (recordLength + 1);
 			}
 
 			return dict;
@@ -1018,61 +1052,52 @@ namespace ZeroconfService
 		}		
 
 		/// <summary>
-		/// Gets or the TXT record data.
+		///		when setting the TXT record for the receiver
+		///		If the service is not currently published, this will just update the local cache
+		///		Otherwise this method will attempt to update the txt record for the published service.
 		/// </summary>
+        /// <exception cref="DNSServiceException"/>
 		public byte[] TXTRecordData
 		{
 			get { return mTXTRecordData; }
-		}
+            set
+            {
+			    if (registerReplyCb == null)
+			    {
+				    // The service isn't currently published, so we may freely update our internal variable
+				    mTXTRecordData = value;
+				    return;
+			    }
+			    else
+			    {
+				    // The service is currently published, so if the txt record data has changed,
+				    // we'll need to publish those changes.
 
-		/// <summary>
-		///		Sets the TXT record for the receiver, and returns a Boolean value that indicates whether the operation was successful.
-		///		If the service is not currently published, this will always return true.
-		///		Otherwise this method will attempt to update the txt record for the published service.
-		/// </summary>
-		/// <param name="data">
-		///		The updated TXT record data.
-		/// </param>
-		/// <returns>
-		///		TRUE if recordData is successfully set as the TXT record, otherwise FALSE.
-		/// </returns>
-		public bool setTXTRecordData(byte[] data)
-		{
-			if (registerReplyCb == null)
-			{
-				// The service isn't currently published, so we may freely update our internal variable
-				mTXTRecordData = data;
-				return true;
-			}
-			else
-			{
-				// The service is currently published, so if the txt record data has changed,
-				// we'll need to publish those changes.
+				    if (!NetService.ByteArrayCompare(mTXTRecordData, value))
+				    {
+					    UInt16 dataLen = (UInt16)((value != null) ? value.Length : 0);
 
-				if (!NetService.ByteArrayCompare(mTXTRecordData, data))
-				{
-					UInt16 dataLen = (UInt16)((data != null) ? data.Length : 0);
-
-					DNSServiceErrorType err;
-					err = mDNSImports.DNSServiceUpdateRecord(sdRefA, IntPtr.Zero, 0, dataLen, data, 0);
-					
-					if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
-					{
-						mTXTRecordData = data;
-						return true;
-					}
-					else
-					{
-						throw new DNSServiceException("DNSServiceUpdateRecord", err);
-					}
-				}
-				else
-				{
-					// There's no difference between the currently published data, and the given data.
-					// We can simply ignore the request.
-					return true;
-				}
-			}
+					    DNSServiceErrorType err;
+					    err = mDNSImports.DNSServiceUpdateRecord(sdRefA, IntPtr.Zero, 0, dataLen, value, 0);
+    					
+					    if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+					    {
+						    mTXTRecordData = value;
+						    return;
+					    }
+					    else
+					    {
+						    throw new DNSServiceException("DNSServiceUpdateRecord", err);
+					    }
+				    }
+				    else
+				    {
+					    // There's no difference between the currently published data, and the given data.
+					    // We can simply ignore the request.
+					    return;
+				    }
+			    }
+            }
 		}
 
 		/// <summary>
