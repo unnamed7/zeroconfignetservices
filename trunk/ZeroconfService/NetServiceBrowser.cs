@@ -146,10 +146,10 @@ namespace ZeroconfService
 			Stop();
 
 			browseReplyCb = new mDNSImports.DNSServiceBrowseReply(BrowseReply);
-			gchSelf = GCHandle.Alloc(this);
+            gchSelf = GCHandle.Alloc(browseReplyCb);
 
 			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceBrowse(out sdRef, 0, 0, type, domain, browseReplyCb, (IntPtr)gchSelf);
+			err = mDNSImports.DNSServiceBrowse(out sdRef, 0, 0, type, domain, browseReplyCb, IntPtr.Zero);
 
 			if (err != DNSServiceErrorType.kDNSServiceErr_NoError)
 			{
@@ -182,7 +182,7 @@ namespace ZeroconfService
 		/// </summary>
 		public void SearchForBrowseableDomains()
 		{
-			SearchForDomains(DNSServiceFlags.kDNSServiceFlagsBrowseDomains);
+            SearchForDomains(DNSServiceFlags.kDNSServiceFlagsBrowseDomains);
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace ZeroconfService
 			}
 		}
 
-		private static void BrowseReply(IntPtr sdRef,
+		private  void BrowseReply(IntPtr sdRef,
 		                       DNSServiceFlags flags,
 		                                UInt32 interfaceIndex,
 		                   DNSServiceErrorType errorCode,
@@ -228,9 +228,8 @@ namespace ZeroconfService
 		                                String replyDomain,
 		                                IntPtr context)
 		{
-			GCHandle gch = (GCHandle)context;
-			NetServiceBrowser c = (NetServiceBrowser)gch.Target;
-
+			//NetServiceBrowser c = (NetServiceBrowser)GCHandle.FromIntPtr(context).Target;
+            NetServiceBrowser c = this;
 			bool moreComing = ((flags & DNSServiceFlags.kDNSServiceFlagsMoreComing) != 0);
 
 			if ((flags & DNSServiceFlags.kDNSServiceFlagsAdd) != 0)

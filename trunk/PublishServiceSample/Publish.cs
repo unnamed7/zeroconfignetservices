@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
@@ -22,18 +23,16 @@ namespace PublishServiceSample
 
         private void DoPublish()
         {
-			try
-			{
-				float bonjourVersion = NetService.GetVersion();
-				Console.WriteLine("Bonjour Version: {0}", bonjourVersion);
-			}
-			catch
-			{
-				String message = "Bonjour is not installed!";
-				MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-				Application.Exit();
-			}
+            try
+            {
+                Debug.WriteLine(String.Format("Bonjour Version: {0}", NetService.DaemonVersion));
+            }
+            catch (Exception ex)
+            {
+                String message = ex is DNSServiceException ? "Bonjour is not installed!" : ex.Message;
+                MessageBox.Show(message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Application.Exit();
+            }
 
             String domain = "";
 			String type = serviceTypeTextBox.Text;
@@ -48,7 +47,7 @@ namespace PublishServiceSample
 			/* HARDCODE TXT RECORD */
 			System.Collections.Hashtable dict = new System.Collections.Hashtable();
 			dict.Add("txtvers", "1");
-			publishService.setTXTRecordData(NetService.DataFromTXTRecordDictionary(dict));
+			publishService.TXTRecordData = NetService.DataFromTXTRecordDictionary(dict);
 
 			publishService.Publish();
 
@@ -117,13 +116,17 @@ namespace PublishServiceSample
 			/* HARDCODE TXT RECORD */
 			System.Collections.Hashtable dict = new System.Collections.Hashtable();
 			dict.Add("txtvers", "2");
-			dict.Add("deusty", "designs");
-			bool result = publishService.setTXTRecordData(NetService.DataFromTXTRecordDictionary(dict));
+			dict.Add("CurrentTime", DateTime.Now.ToString());
+            try 
+	        {	        
+				publishService.TXTRecordData = NetService.DataFromTXTRecordDictionary(dict);
+                Debug.WriteLine("TXT Record updated");
 
-			if(result)
-				Console.WriteLine("TXT Record updated");
-			else
+        	}
+	        catch (Exception)
+	        {
 				Console.WriteLine("ERROR UPDATING TXT RECORD!");
+	        }            
 		}
     }
 }

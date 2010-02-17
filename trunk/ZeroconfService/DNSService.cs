@@ -6,60 +6,10 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
+using System.Diagnostics;
 
 namespace ZeroconfService
 {
-	/// <summary>
-	/// An exception that is thrown when a <see cref="NetService">NetService</see>
-	/// or <see cref="NetServiceBrowser">NetServiceBrowser</see> dll error occurs.
-	/// </summary>
-	public class DNSServiceException : Exception
-	{
-		string s = null;
-		string f = null;
-		DNSServiceErrorType e = DNSServiceErrorType.kDNSServiceErr_NoError;
-
-		internal DNSServiceException(string s)
-		{
-			this.s = s;
-		}
-
-		internal DNSServiceException(string function, DNSServiceErrorType error)
-		{
-			e = error;
-			f = function;
-			s = String.Format("An error occured in the function '{0}': {1}",
-				function, error);
-		}
-
-		/// <summary>
-		/// Creates a returns a string representation of the current exception
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return s;
-		}
-
-		/// <summary>
-		/// Gets a message that describes the current exception.
-		/// </summary>
-		public override string Message
-		{
-			get { return s; }
-		}
-
-		/// <summary>
-		/// Gets the function name (if possible) that returned the underlying error
-		/// </summary>
-		public string Function { get { return f; } }
-		/// <summary>
-		/// Gets the <see cref="DNSServiceErrorType">DNSServiceErrorType</see> error
-		/// that was returned by the underlying function.
-		/// </summary>
-		public DNSServiceErrorType ErrorType { get { return e; } }
-	}
-
 	/// <summary>
 	/// The base class used by the <see cref="NetServiceBrowser">NetServiceBrowser</see>
 	/// and <see cref="NetService">NetService</see> classes. This class primarily
@@ -73,40 +23,50 @@ namespace ZeroconfService
 		// Provides a mapping from sdRef's to their associated WatchSocket's
 		private Hashtable sdRefToSocketMapping = Hashtable.Synchronized(new Hashtable());
 
-		public static float GetVersion()
+        /// <summary>
+        /// 
+        /// </summary>
+        public static Version DaemonVersion
 		{
-			int version = 0;
-			IntPtr result = IntPtr.Zero;
-
-			try
-			{
-				UInt32 size = (UInt32)Marshal.SizeOf(typeof(UInt32));
-
-				result = Marshal.AllocCoTaskMem((Int32)size);
-				
-				DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(mDNSImports.DNSServiceProperty_DaemonVersion, ref result, ref size);
-
-				if (error != DNSServiceErrorType.kDNSServiceErr_NoError)
-				{
-					throw new DNSServiceException("DNSServiceGetProperty", error);
-				}
-
-				version = result.ToInt32();
-			}
-			finally
-			{
-				if (result != IntPtr.Zero) Marshal.FreeCoTaskMem(result);
-			}
-
-			// I have found no documenation that states how to parse a number into it's major/minor parts.
-			// However, I have a few examples:
-			// 1180500 = 118.5
-			// 1760300 = 176.3
-
-			int majorVersion = version / 10000;
-			int minorVersion = version % 1000;
-
-			return (float)majorVersion + (float)(minorVersion / 1000f);
+            get
+            {
+                int majorVersion = 0;
+                int minorVersion = 0;
+                int buildVersion = 0;
+                IntPtr result = IntPtr.Zero;
+                try
+                {
+                    UInt32 size = (UInt32)Marshal.SizeOf(typeof(UInt32));
+                    result = Marshal.AllocCoTaskMem((Int32)size);
+                    try
+                    {
+                        DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(
+                            DNSServiceProperty.DaemonVersion.ToString(), result, ref size);
+                        if (error != DNSServiceErrorType.kDNSServiceErr_NoError)
+                        {
+                            throw new DNSServiceException("DNSServiceGetProperty", error);
+                        }
+                    }
+                    catch (DllNotFoundException e)
+                    {
+                        throw new DNSServiceException("Unable to connect to system daemon service", e);
+                    }
+                    int version = Marshal.ReadInt32(result);
+                    // Apple documentation states that the version number value is as follows.
+                    // Major part of the build number * 10000 + minor part of the build number * 100 
+                    // 
+                    // If this is true then every version must be a multiple of 100. Just in case this doesn't hold
+                    // up we will capture the remainder into the build version value.
+                    majorVersion = version / 10000;
+                    minorVersion = (version % 10000) / 100;
+                    buildVersion = version % 100;
+                }
+                finally
+                {
+                    if (result != IntPtr.Zero) Marshal.FreeCoTaskMem(result);
+                }
+                return new Version(majorVersion, minorVersion, buildVersion);
+            }
 		}
 
 		private void PollInvokeable(IntPtr sdRef)
@@ -117,7 +77,7 @@ namespace ZeroconfService
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("Got an exception on DNSServiceProcessResult (Unamanaged, so via user callback?)\n{0}{1}", e, e.StackTrace);
+				Debug.WriteLine(String.Format("Got an exception on DNSServiceProcessResult (Unamanaged, so via user callback?)\n{0}{1}", e, e.StackTrace));
 			}
 		}
 		private delegate void PollInvokeableDelegate(IntPtr sdRef);
