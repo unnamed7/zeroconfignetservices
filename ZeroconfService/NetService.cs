@@ -124,13 +124,9 @@ namespace ZeroconfService
 		private String mHostName;
 		private ArrayList mAddresses;
 
-		private IntPtr sdRefA;
-		private IntPtr sdRefB;
-		private IntPtr sdRefC;
-
-		private GCHandle gchSelfA;
-		private GCHandle gchSelfB;
-		private GCHandle gchSelfC;
+		private IntPtr registeredServiceHandle;
+		private IntPtr serviceQueryHandle;
+		private IntPtr ipLookupQueryHandle;
 
 		private mDNSImports.DNSServiceQueryReply queryReplyCb;
 		private mDNSImports.DNSServiceQueryReply ipLookupReplyCb;
@@ -243,34 +239,24 @@ namespace ZeroconfService
 				resolveTimer = null;
 			}
 
-			TeardownWatchSocket(sdRefA);
-			if (sdRefA != IntPtr.Zero)
+			TeardownWatchSocket(registeredServiceHandle);
+			if (registeredServiceHandle != IntPtr.Zero)
 			{
-				mDNSImports.DNSServiceRefDeallocate(sdRefA);
-				sdRefA = IntPtr.Zero;
+				mDNSImports.DNSServiceRefDeallocate(registeredServiceHandle);
+				registeredServiceHandle = IntPtr.Zero;
 			}
 
 			resolveReplyCb = null;
 			registerReplyCb = null;
 
-			if (gchSelfA.IsAllocated)
+			TeardownWatchSocket(ipLookupQueryHandle);
+			if (ipLookupQueryHandle != IntPtr.Zero)
 			{
-				gchSelfA.Free();
-			}
-
-			TeardownWatchSocket(sdRefC);
-			if (sdRefC != IntPtr.Zero)
-			{
-				mDNSImports.DNSServiceRefDeallocate(sdRefC);
-				sdRefC = IntPtr.Zero;
+				mDNSImports.DNSServiceRefDeallocate(ipLookupQueryHandle);
+				ipLookupQueryHandle = IntPtr.Zero;
 			}
 
 			ipLookupReplyCb = null;
-
-			if (gchSelfC.IsAllocated)
-			{
-				gchSelfC.Free();
-			}
 		}
 
 		/// <summary>
@@ -281,18 +267,17 @@ namespace ZeroconfService
 			Stop();
 
 			registerReplyCb = new mDNSImports.DNSServiceRegisterReply(RegisterReply);
-			gchSelfA = GCHandle.Alloc(this);
 
 			DNSServiceErrorType err;
 
 			ushort txtRecordLen = (TXTRecordData != null) ? Convert.ToUInt16(TXTRecordData.Length) : (ushort)0;
 			ushort port = (ushort)System.Net.IPAddress.HostToNetworkOrder((short)mPort);
 
-            err = mDNSImports.DNSServiceRegister(out sdRefA, 0, 0, Name, Type, Domain, null, port, txtRecordLen, TXTRecordData, registerReplyCb, (IntPtr)gchSelfA);
+            err = mDNSImports.DNSServiceRegister(out registeredServiceHandle, 0, 0, Name, Type, Domain, null, port, txtRecordLen, TXTRecordData, registerReplyCb, IntPtr.Zero);
 
-			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (err == DNSServiceErrorType.NoError)
 			{
-				SetupWatchSocket(sdRefA);
+				SetupWatchSocket(registeredServiceHandle);
 			}
 			else
 			{
@@ -318,7 +303,7 @@ namespace ZeroconfService
 		///		Currently unused, reserved for future use.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError on success, otherwise will indicate the failure that occurred
+		///		Will be NoError on success, otherwise will indicate the failure that occurred
 		///		(including name conflicts, if the kDNSServiceFlagsNoAutoRename flag was used when registering.)
 		///		Other parameters are undefined if errorCode is nonzero.
 		/// </param>
@@ -345,7 +330,7 @@ namespace ZeroconfService
 		                           String domain,
 		                          IntPtr context)
 		{
-			if (errorCode == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (errorCode == DNSServiceErrorType.NoError)
 			{
 				// Update name, type domain to match what was actually published
 				mName = name;
@@ -377,14 +362,13 @@ namespace ZeroconfService
 			Stop();
 			
 			resolveReplyCb = new mDNSImports.DNSServiceResolveReply(ResolveReply);
-            gchSelfA = GCHandle.Alloc(resolveReplyCb);
 			
 			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceResolve(out sdRefA, 0, 0, Name, Type, Domain, resolveReplyCb, IntPtr.Zero);
+			err = mDNSImports.DNSServiceResolve(out registeredServiceHandle, 0, 0, Name, Type, Domain, resolveReplyCb, IntPtr.Zero);
 
-			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (err == DNSServiceErrorType.NoError)
 			{
-				SetupWatchSocket(sdRefA);
+				SetupWatchSocket(registeredServiceHandle);
 
 				resolveTimer = new System.Threading.Timer(new TimerCallback(ResolveTimerCallback), resolveReplyCb, (seconds * 1000), Timeout.Infinite);
 			}
@@ -415,7 +399,7 @@ namespace ZeroconfService
 		///		The interface on which the service was resolved.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError (0) on success, otherwise will indicate the failure that occurred.
+		///		Will be NoError (0) on success, otherwise will indicate the failure that occurred.
 		///		Other parameters are undefined if the errorCode is nonzero.
 		/// </param>
 		/// <param name="fullname">
@@ -451,7 +435,7 @@ namespace ZeroconfService
 		                          byte[] txtRecord,
 		                          IntPtr context)
 		{
-			if (errorCode == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (errorCode == DNSServiceErrorType.NoError)
 			{
 				// Update internal variables
 				mHostName = hosttarget;
@@ -503,14 +487,13 @@ namespace ZeroconfService
 			mAddresses = new ArrayList();
 
 			ipLookupReplyCb = new mDNSImports.DNSServiceQueryReply(IPLookupReply);
-			gchSelfC = GCHandle.Alloc(this);
 
 			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceQueryRecord(out sdRefC, 0, 0, HostName, DNSServiceType.kDNSServiceType_A, DNSServiceClass.kDNSServiceClass_IN, ipLookupReplyCb, (IntPtr)gchSelfC);
+			err = mDNSImports.DNSServiceQueryRecord(out ipLookupQueryHandle, 0, 0, HostName, DNSServiceType.A, DNSServiceClass.IN, ipLookupReplyCb, IntPtr.Zero);
 
-			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (err == DNSServiceErrorType.NoError)
 			{
-				SetupWatchSocket(sdRefC);
+				SetupWatchSocket(ipLookupQueryHandle);
 			}
 			else
 			{
@@ -540,7 +523,7 @@ namespace ZeroconfService
 		///		The interface on which the query was resolved.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError on success, otherwise will indicate the failure that occurred.
+		///		Will be NoError on success, otherwise will indicate the failure that occurred.
 		///		Other parameters are undefined if errorCode is nonzero.
 		/// </param>
 		/// <param name="fullname">
@@ -576,16 +559,16 @@ namespace ZeroconfService
 		                           UInt32 ttl,
 		                           IntPtr context)
 		{
-			if (errorCode == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (errorCode == DNSServiceErrorType.NoError)
 			{
-				if((flags & DNSServiceFlags.kDNSServiceFlagsAdd) > 0)
+				if((flags & DNSServiceFlags.Add) > 0)
 				{
 					System.Net.IPAddress addr = new System.Net.IPAddress(rData);
 					System.Net.IPEndPoint ep = new System.Net.IPEndPoint(addr, mPort);
 					mAddresses.Add(ep);
 				}
 
-				if ((flags & DNSServiceFlags.kDNSServiceFlagsMoreComing) == 0)
+				if ((flags & DNSServiceFlags.MoreComing) == 0)
 				{
 					Stop();
 					if (DidResolveService != null)
@@ -631,7 +614,7 @@ namespace ZeroconfService
 
 				if (DidNotResolveService != null)
 				{
-					DNSServiceException exception = new DNSServiceException("Timeout", DNSServiceErrorType.kDNSServiceErr_Timeout);
+					DNSServiceException exception = new DNSServiceException("Timeout", DNSServiceErrorType.Timeout);
 					DidNotResolveService(this, exception);
 				}
 			}
@@ -678,16 +661,15 @@ namespace ZeroconfService
 			if (queryReplyCb == null)
 			{
 				queryReplyCb = new mDNSImports.DNSServiceQueryReply(QueryReply);
-				gchSelfB = GCHandle.Alloc(this);
 
 				String fqdn = String.Format("{0}.{1}{2}", Name, Type, Domain);
 
 				DNSServiceErrorType err;
-				err = mDNSImports.DNSServiceQueryRecord(out sdRefB, DNSServiceFlags.kDNSServiceFlagsLongLivedQuery, 0, fqdn, DNSServiceType.kDNSServiceType_TXT, DNSServiceClass.kDNSServiceClass_IN, queryReplyCb, (IntPtr)gchSelfB);
+				err = mDNSImports.DNSServiceQueryRecord(out serviceQueryHandle, DNSServiceFlags.LongLivedQuery, 0, fqdn, DNSServiceType.TXT, DNSServiceClass.IN, queryReplyCb, IntPtr.Zero);
 
-				if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+				if (err == DNSServiceErrorType.NoError)
 				{
-					SetupWatchSocket(sdRefB);
+					SetupWatchSocket(serviceQueryHandle);
 				}
 				else
 				{
@@ -701,19 +683,14 @@ namespace ZeroconfService
 		/// </summary>
 		public void StopMonitoring()
 		{
-			TeardownWatchSocket(sdRefB);
-			if (sdRefB != IntPtr.Zero)
+			TeardownWatchSocket(serviceQueryHandle);
+			if (serviceQueryHandle != IntPtr.Zero)
 			{
-				mDNSImports.DNSServiceRefDeallocate(sdRefB);
-				sdRefB = IntPtr.Zero;
+				mDNSImports.DNSServiceRefDeallocate(serviceQueryHandle);
+				serviceQueryHandle = IntPtr.Zero;
 			}
 			
 			queryReplyCb = null;
-
-			if (gchSelfB.IsAllocated)
-			{
-				gchSelfB.Free();
-			}
 		}
 
 		/// <summary>
@@ -733,7 +710,7 @@ namespace ZeroconfService
 		///		The interface on which the query was resolved.
 		/// </param>
 		/// <param name="errorCode">
-		///		Will be kDNSServiceErr_NoError on success, otherwise will indicate the failure that occurred.
+		///		Will be NoError on success, otherwise will indicate the failure that occurred.
 		///		Other parameters are undefined if errorCode is nonzero.
 		/// </param>
 		/// <param name="fullname">
@@ -769,7 +746,7 @@ namespace ZeroconfService
 		                        UInt32 ttl,
 		                        IntPtr context)
 		{
-			if (errorCode == DNSServiceErrorType.kDNSServiceErr_NoError)
+			if (errorCode == DNSServiceErrorType.NoError)
 			{
 				mTXTRecordData = rData;
 
@@ -1078,9 +1055,9 @@ namespace ZeroconfService
 					    UInt16 dataLen = (UInt16)((value != null) ? value.Length : 0);
 
 					    DNSServiceErrorType err;
-					    err = mDNSImports.DNSServiceUpdateRecord(sdRefA, IntPtr.Zero, 0, dataLen, value, 0);
+					    err = mDNSImports.DNSServiceUpdateRecord(registeredServiceHandle, IntPtr.Zero, 0, dataLen, value, 0);
     					
-					    if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
+					    if (err == DNSServiceErrorType.NoError)
 					    {
 						    mTXTRecordData = value;
 						    return;

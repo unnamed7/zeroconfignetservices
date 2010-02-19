@@ -29,7 +29,7 @@ namespace ZeroconfService
 	/// about controlling asynchronous events.
 	/// </para>
 	/// </remarks>
-	public sealed class NetServiceBrowser : DNSService
+	public sealed class NetServiceBrowser : DNSService, IDisposable
 	{
 		/// <summary>
 		/// Represents the method that will handle <see cref="DidFindService">DidFindService</see>
@@ -116,12 +116,12 @@ namespace ZeroconfService
 		/// </summary>
 		public event DomainRemoved DidRemoveDomain;
 
-		private IntPtr sdRef;
+		private IntPtr serviceHandle;
+        private bool disposed = false;
 
 		private List<NetService> foundServices;
 		private mDNSImports.DNSServiceBrowseReply browseReplyCb;
 		private mDNSImports.DNSServiceDomainEnumReply domainSearchReplyCb;
-		private GCHandle gchSelf;
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NetServiceBrowser">NetServiceBrowser</see> class.
@@ -130,6 +130,28 @@ namespace ZeroconfService
 		{
 			foundServices = new List<NetService>();
 		}
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose managed resources here
+                }
+                // Clean up unmanaged resources here
+                Stop();
+            }
+            disposed = true;
+        }
+
+        /// <summary>
+        /// Releases all resources used by the <see cref="NetServiceBrowser">NetServiceBrowser</see> 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
 		/// <summary>
 		/// Starts a search for services of a given type within a given domain.
@@ -144,37 +166,25 @@ namespace ZeroconfService
 		public void SearchForService(String type, String domain)
 		{
 			Stop();
-
 			browseReplyCb = new mDNSImports.DNSServiceBrowseReply(BrowseReply);
-            gchSelf = GCHandle.Alloc(browseReplyCb);
-
-			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceBrowse(out sdRef, 0, 0, type, domain, browseReplyCb, IntPtr.Zero);
-
-			if (err != DNSServiceErrorType.kDNSServiceErr_NoError)
+			DNSServiceErrorType err = mDNSImports.DNSServiceBrowse(out serviceHandle, 0, 0, type, domain, browseReplyCb, IntPtr.Zero);
+			if (err != DNSServiceErrorType.NoError)
 			{
 				throw new DNSServiceException("DNSServiceBrowse", err);
 			}
-
-			SetupWatchSocket(sdRef);
+			SetupWatchSocket(serviceHandle);
 		}
 
 		private void SearchForDomains(DNSServiceFlags flags)
 		{
 			Stop();
-
 			domainSearchReplyCb = new mDNSImports.DNSServiceDomainEnumReply(DomainSearchReply);
-			gchSelf = GCHandle.Alloc(this);
-
-			DNSServiceErrorType err;
-			err = mDNSImports.DNSServiceEnumerateDomains(out sdRef, flags, 0, domainSearchReplyCb, (IntPtr)gchSelf);
-
-			if (err != DNSServiceErrorType.kDNSServiceErr_NoError)
+			DNSServiceErrorType err = mDNSImports.DNSServiceEnumerateDomains(out serviceHandle, flags, 0, domainSearchReplyCb, IntPtr.Zero);
+			if (err != DNSServiceErrorType.NoError)
 			{
 				throw new DNSServiceException("DNSServiceEnumerateDomains", err);
 			}
-
-			SetupWatchSocket(sdRef);
+			SetupWatchSocket(serviceHandle);
 		}
 
 		/// <summary>
@@ -182,7 +192,7 @@ namespace ZeroconfService
 		/// </summary>
 		public void SearchForBrowseableDomains()
 		{
-            SearchForDomains(DNSServiceFlags.kDNSServiceFlagsBrowseDomains);
+            SearchForDomains(DNSServiceFlags.BrowseDomains);
 		}
 
 		/// <summary>
@@ -194,7 +204,7 @@ namespace ZeroconfService
 		/// </remarks>
 		public void SearchForRegistrationDomains()
 		{
-			SearchForDomains(DNSServiceFlags.kDNSServiceFlagsRegistrationDomains);
+			SearchForDomains(DNSServiceFlags.RegistrationDomains);
 		}
 
 		/// <summary>
@@ -202,21 +212,14 @@ namespace ZeroconfService
 		/// </summary>
 		public void Stop()
 		{
-			TeardownWatchSocket(sdRef);
-
-			if (sdRef != IntPtr.Zero)
+			TeardownWatchSocket(serviceHandle);
+			if (serviceHandle != IntPtr.Zero)
 			{
-				mDNSImports.DNSServiceRefDeallocate(sdRef);
-				sdRef = IntPtr.Zero;
+				mDNSImports.DNSServiceRefDeallocate(serviceHandle);
+				serviceHandle = IntPtr.Zero;
 			}
-
 			browseReplyCb = null;
 			domainSearchReplyCb = null;
-
-			if (gchSelf.IsAllocated)
-			{
-				gchSelf.Free();
-			}
 		}
 
 		private  void BrowseReply(IntPtr sdRef,
@@ -228,63 +231,52 @@ namespace ZeroconfService
 		                                String replyDomain,
 		                                IntPtr context)
 		{
-			//NetServiceBrowser c = (NetServiceBrowser)GCHandle.FromIntPtr(context).Target;
-            NetServiceBrowser c = this;
-			bool moreComing = ((flags & DNSServiceFlags.kDNSServiceFlagsMoreComing) != 0);
-
-			if ((flags & DNSServiceFlags.kDNSServiceFlagsAdd) != 0)
+			bool moreComing = ((flags & DNSServiceFlags.MoreComing) != 0);
+			if ((flags & DNSServiceFlags.Add) != 0)
 			{
 				// Add
-
 				NetService newService = new NetService(replyDomain, regtype, serviceName);
-				newService.InheritInvokeOptions(c);
+				newService.InheritInvokeOptions(this);
 
-				c.foundServices.Add(newService);
+				foundServices.Add(newService);
 
-				if (c.DidFindService != null)
-					c.DidFindService(c, newService, moreComing);
+				if (DidFindService != null)
+					DidFindService(this, newService, moreComing);
 			}
 			else
 			{
 				// Remove
-
-				foreach (NetService service in c.foundServices)
+				foreach (NetService service in foundServices)
 				{
 					if (service.Name == serviceName && service.Type == regtype && service.Domain == replyDomain)
 					{
-						c.foundServices.Remove(service);
-						if (c.DidRemoveService != null)
-							c.DidRemoveService(c, service, moreComing);
+						foundServices.Remove(service);
+						if (DidRemoveService != null)
+							DidRemoveService(this, service, moreComing);
 						break;
 					}
 				}
-
 			}
 		}
 
-		private static void DomainSearchReply(IntPtr sdRef,
+		private void DomainSearchReply(IntPtr sdRef,
 		                             DNSServiceFlags flags,
 		                                      UInt32 interfaceIndex,
 		                         DNSServiceErrorType errorCode,
 		                                      String replyDomain,
 		                                      IntPtr context)
 		{
-			GCHandle gch = (GCHandle)context;
-			NetServiceBrowser c = (NetServiceBrowser)gch.Target;
-
-			bool moreComing = ((flags & DNSServiceFlags.kDNSServiceFlagsMoreComing) != 0);
-
-			if ((flags & DNSServiceFlags.kDNSServiceFlagsAdd) != 0)
+			bool moreComing = ((flags & DNSServiceFlags.MoreComing) != 0);
+			if ((flags & DNSServiceFlags.Add) != 0)
 			{ /* add */
-				if (c.DidFindDomain != null)
-					c.DidFindDomain(c, replyDomain, moreComing);
+				if (DidFindDomain != null)
+					DidFindDomain(this, replyDomain, moreComing);
 			}
 			else
 			{ /* remove */
-				if (c.DidRemoveDomain != null)
-					c.DidRemoveDomain(c, replyDomain, moreComing);
+				if (DidRemoveDomain != null)
+					DidRemoveDomain(this, replyDomain, moreComing);
 			}
 		}
-
-	} /* end class */
+    } /* end class */
 }
