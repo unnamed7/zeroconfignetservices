@@ -125,7 +125,7 @@ namespace PublishServiceSample
         	}
 	        catch (Exception)
 	        {
-				Console.WriteLine("ERROR UPDATING TXT RECORD!");
+				Debug.WriteLine("ERROR UPDATING TXT RECORD!");
 	        }            
 		}
     }

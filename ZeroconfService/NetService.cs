@@ -288,7 +288,7 @@ namespace ZeroconfService
 			ushort txtRecordLen = (TXTRecordData != null) ? Convert.ToUInt16(TXTRecordData.Length) : (ushort)0;
 			ushort port = (ushort)System.Net.IPAddress.HostToNetworkOrder((short)mPort);
 
-			err = mDNSImports.DNSServiceRegister(out sdRefA, 0, 0, Name, Type, Domain, null, port, txtRecordLen, TXTRecordData, registerReplyCb, (IntPtr)gchSelfA);
+            err = mDNSImports.DNSServiceRegister(out sdRefA, 0, 0, Name, Type, Domain, null, port, txtRecordLen, TXTRecordData, registerReplyCb, (IntPtr)gchSelfA);
 
 			if (err == DNSServiceErrorType.kDNSServiceErr_NoError)
 			{
@@ -853,8 +853,8 @@ namespace ZeroconfService
 			//
 			// -Adapted from "Zero Configuration Networking, The Definitive Guide", page 66
 
-            const int maxRecordEntrySize = 255;
-            const int maxUsableRecordEntrySize = 253; // Subtraction of the leading byte count and the '=' char
+            const int maxRecordEntrySize = 254;
+            const int maxUsableRecordEntrySize = 253; // Subtraction of the '=' char
             if (dict == null || dict.Count == 0)
 			{
 				byte[] emptyTXTRecord = { 0 };
@@ -888,7 +888,7 @@ namespace ZeroconfService
 				{
 					valueData = (byte[])kvp.Value;
 				}
-                int entryLength = keyData.Length + (valueData == null? 0 : valueData.Length) + 2;
+                int entryLength = keyData.Length + (valueData == null? 0 : valueData.Length) + 1;
                 int usableValueDataSize = valueData.Length;
                 if (entryLength > maxRecordEntrySize)
                 {
