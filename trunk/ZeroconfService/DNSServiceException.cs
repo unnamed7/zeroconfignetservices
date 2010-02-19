@@ -8,12 +8,12 @@ namespace ZeroconfService
     /// An exception that is thrown when a <see cref="NetService">NetService</see>
     /// or <see cref="NetServiceBrowser">NetServiceBrowser</see> dll error occurs.
     /// </summary>
-    public class DNSServiceException : Exception
+    public class DNSServiceException : ApplicationException
     {
         string s = null;
         string f = null;
         Exception innerException;
-        DNSServiceErrorType e = DNSServiceErrorType.kDNSServiceErr_NoError;
+        DNSServiceErrorType e = DNSServiceErrorType.NoError;
 
         internal DNSServiceException(string s)
         {

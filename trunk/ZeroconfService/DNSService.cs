@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace ZeroconfService
 {
-	/// <summary>
+    /// <summary>
 	/// The base class used by the <see cref="NetServiceBrowser">NetServiceBrowser</see>
 	/// and <see cref="NetService">NetService</see> classes. This class primarily
 	/// abstracts the asynchronous functionality of its derived classes.
@@ -42,7 +42,7 @@ namespace ZeroconfService
                     {
                         DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(
                             DNSServiceProperty.DaemonVersion.ToString(), result, ref size);
-                        if (error != DNSServiceErrorType.kDNSServiceErr_NoError)
+                        if (error != DNSServiceErrorType.NoError)
                         {
                             throw new DNSServiceException("DNSServiceGetProperty", error);
                         }
