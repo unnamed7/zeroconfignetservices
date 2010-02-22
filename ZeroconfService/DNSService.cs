@@ -20,6 +20,8 @@ namespace ZeroconfService
 	/// </remarks>
 	public abstract class DNSService
 	{
+		public const String DNSServiceProperty_DaemonVersion = "DaemonVersion";
+		
 		// Provides a mapping from sdRef's to their associated WatchSocket's
 		private Hashtable sdRefToSocketMapping = Hashtable.Synchronized(new Hashtable());
 
@@ -41,7 +43,7 @@ namespace ZeroconfService
                     try
                     {
                         DNSServiceErrorType error = mDNSImports.DNSServiceGetProperty(
-                            DNSServiceProperty.DaemonVersion.ToString(), result, ref size);
+                            DNSServiceProperty_DaemonVersion, result, ref size);
                         if (error != DNSServiceErrorType.NoError)
                         {
                             throw new DNSServiceException("DNSServiceGetProperty", error);

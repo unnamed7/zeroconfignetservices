@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace ZeroconfService
 {
-	class UnixSocket
+	public class UnixSocket
 	{
 		private Int32 mSocket;
 
@@ -117,8 +117,6 @@ namespace ZeroconfService
 
 		private unsafe class timeval
 		{
-			public Int32 tv_sec;
-			public Int32 tv_usec;
 		}
 
 		[DllImport("Ws2_32.dll")]
