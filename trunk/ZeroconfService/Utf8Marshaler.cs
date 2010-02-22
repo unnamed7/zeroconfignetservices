@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ZeroconfService
 {
-    internal class Utf8Marshaler : ICustomMarshaler
+    public class Utf8Marshaler : ICustomMarshaler
     {
         private string cookie;
         private int nativeDataSize = 0;

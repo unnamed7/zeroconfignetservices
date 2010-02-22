@@ -103,13 +103,10 @@ namespace ZeroconfService
 		Timeout           = -72007  /* NSNetServiceError */
 	}
 
-    internal enum DNSServiceProperty
-    {
-        DaemonVersion
-    }
 
-    internal sealed class mDNSImports
+    sealed class mDNSImports
 	{
+    		
         /// <summary>
         /// Gets the specified property.
         /// </summary>
