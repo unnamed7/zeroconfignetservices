@@ -20,7 +20,7 @@ namespace ZeroconfService
 	/// </remarks>
 	public abstract class DNSService
 	{
-		public const String DNSServiceProperty_DaemonVersion = "DaemonVersion";
+		private const String DNSServiceProperty_DaemonVersion = "DaemonVersion";
 		
 		// Provides a mapping from sdRef's to their associated WatchSocket's
 		private Hashtable sdRefToSocketMapping = Hashtable.Synchronized(new Hashtable());
