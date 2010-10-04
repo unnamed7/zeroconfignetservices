@@ -898,7 +898,6 @@ namespace ZeroconfService
 		/// <returns>
 		///		A dictionary representing a TXT record.
 		///	</returns>
-        [Obsolete("Retained for API compatiblity with OS X NSNetServices funtionality")]
 		public static IDictionary DictionaryFromTXTRecordData(byte[] txtRecords)
 		{
 			// The format of TXT Records:
